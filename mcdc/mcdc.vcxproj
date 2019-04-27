@@ -77,7 +77,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>CppCoreCheckArithmeticRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Armin.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,7 +109,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -119,7 +119,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <EnablePREfast>false</EnablePREfast>
       <AdditionalOptions>/experimental:external /external:anglebrackets /external:W0 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4820;4514;5045;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26446;4820;4514;5045;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>./Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,7 +151,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -162,6 +163,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4820;4514;5045;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>./Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,47 +173,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ast.hpp" />
-    <ClInclude Include="codegenerator.hpp" />
-    <ClInclude Include="compiler.hpp" />
-    <ClInclude Include="coverage.hpp" />
-    <ClInclude Include="cloption.hpp" />
-    <ClInclude Include="mcdc.hpp" />
-    <ClInclude Include="grammar.hpp" />
-    <ClInclude Include="petrick.hpp" />
-    <ClInclude Include="parser.hpp" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="quinemccluskey.hpp" />
-    <ClInclude Include="scanner.hpp" />
-    <ClInclude Include="symboltable.hpp" />
-    <ClInclude Include="token.hpp" />
-    <ClInclude Include="types.hpp" />
-    <ClInclude Include="virtualmachine.hpp" />
+    <ClInclude Include="Include\ast.hpp" />
+    <ClInclude Include="Include\codegenerator.hpp" />
+    <ClInclude Include="Include\compiler.hpp" />
+    <ClInclude Include="Include\coverage.hpp" />
+    <ClInclude Include="Include\cloption.hpp" />
+    <ClInclude Include="Include\mcdc.hpp" />
+    <ClInclude Include="Include\grammar.hpp" />
+    <ClInclude Include="Include\petrick.hpp" />
+    <ClInclude Include="Include\parser.hpp" />
+    <ClInclude Include="Include\quinemccluskey.hpp" />
+    <ClInclude Include="Include\scanner.hpp" />
+    <ClInclude Include="Include\symboltable.hpp" />
+    <ClInclude Include="Include\token.hpp" />
+    <ClInclude Include="Include\types.hpp" />
+    <ClInclude Include="Include\virtualmachine.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="codegenerator.cpp" />
-    <ClCompile Include="coverage.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="mcdc.cpp" />
-    <ClCompile Include="mintermcalculator.cpp" />
-    <ClCompile Include="old.cpp" />
-    <ClCompile Include="parser.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    <ClCompile Include="Source\codegenerator.cpp" />
+    <ClCompile Include="Source\coverage.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\mcdc.cpp" />
+    <ClCompile Include="Source\mintermcalculator.cpp" />
+    <ClCompile Include="Source\parser.cpp" />
+    <ClCompile Include="Source\petrick.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="petrick.cpp" />
-    <ClCompile Include="cloption.cpp" />
-    <ClCompile Include="quinemccluskey.cpp" />
-    <ClCompile Include="scanner.cpp" />
-    <ClCompile Include="ast.cpp" />
-    <ClCompile Include="token.cpp" />
-    <ClCompile Include="virtualmachine.cpp" />
+    <ClCompile Include="Source\cloption.cpp" />
+    <ClCompile Include="Source\quinemccluskey.cpp" />
+    <ClCompile Include="Source\scanner.cpp" />
+    <ClCompile Include="Source\ast.cpp" />
+    <ClCompile Include="Source\token.cpp" />
+    <ClCompile Include="Source\virtualmachine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="mintermcalculater.hpp" />
+    <None Include="Include\mintermcalculater.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

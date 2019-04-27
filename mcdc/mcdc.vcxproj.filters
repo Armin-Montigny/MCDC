@@ -15,104 +15,95 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="Include\ast.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="virtualmachine.hpp">
+    <ClInclude Include="Include\cloption.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="token.hpp">
+    <ClInclude Include="Include\codegenerator.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="grammar.hpp">
+    <ClInclude Include="Include\compiler.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="scanner.hpp">
+    <ClInclude Include="Include\coverage.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="codegenerator.hpp">
+    <ClInclude Include="Include\grammar.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="parser.hpp">
+    <ClInclude Include="Include\parser.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="compiler.hpp">
+    <ClInclude Include="Include\petrick.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="quinemccluskey.hpp">
+    <ClInclude Include="Include\quinemccluskey.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="petrick.hpp">
+    <ClInclude Include="Include\scanner.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="types.hpp">
+    <ClInclude Include="Include\symboltable.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="coverage.hpp">
+    <ClInclude Include="Include\token.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="mcdc.hpp">
+    <ClInclude Include="Include\types.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="ast.hpp">
+    <ClInclude Include="Include\virtualmachine.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="symboltable.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="cloption.hpp">
+    <ClInclude Include="Include\mcdc.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="Source\ast.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="mcdc.cpp">
+    <ClCompile Include="Source\cloption.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="parser.cpp">
+    <ClCompile Include="Source\codegenerator.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="token.cpp">
+    <ClCompile Include="Source\coverage.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="virtualmachine.cpp">
+    <ClCompile Include="Source\main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="scanner.cpp">
+    <ClCompile Include="Source\mcdc.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="codegenerator.cpp">
+    <ClCompile Include="Source\parser.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="quinemccluskey.cpp">
+    <ClCompile Include="Source\petrick.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="petrick.cpp">
+    <ClCompile Include="Source\quinemccluskey.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="mintermcalculator.cpp">
+    <ClCompile Include="Source\scanner.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="coverage.cpp">
+    <ClCompile Include="Source\token.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="old.cpp">
+    <ClCompile Include="Source\virtualmachine.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="ast.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="cloption.cpp">
+    <ClCompile Include="Source\mintermcalculator.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mintermcalculater.hpp">
+    <None Include="Include\mintermcalculater.hpp">
       <Filter>Headerdateien</Filter>
     </None>
   </ItemGroup>
