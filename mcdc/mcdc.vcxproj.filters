@@ -107,4 +107,7 @@
       <Filter>Headerdateien</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="options.txt" />
+  </ItemGroup>
 </Project>
