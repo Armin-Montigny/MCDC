@@ -78,7 +78,7 @@ AST for value: 0
 
 0 ID a (0)
 
-1 OR 0,2 (0)
+1            OR 0,2 (0)
 
 2 ID b (0)
 
@@ -87,7 +87,7 @@ AST for value: 1
 
 0 ID a (0)
 
-1 OR 0,2 (1)
+1             OR 0,2 (1)
 
 2 ID b (1)
 
@@ -96,7 +96,7 @@ AST for influencing condition check
 
 0 ID a (0)
 
-1 OR 0,2 (1)
+1             OR 0,2 (1)
 
 2 ID b (1)
 
@@ -119,11 +119,11 @@ Masking MCDC Test pair for condition: b Test Pair: 0 15
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
 AST for value: 0
 
-0 ID a (0)
+0                                  ID a (0)
 
 1
 
-2 OR 0,4 (0) ID b (0)
+2 OR 0,4 (0)                       ID b (0)
 
 3
 
