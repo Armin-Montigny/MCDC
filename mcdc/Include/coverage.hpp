@@ -217,8 +217,8 @@ using TableCellCIterator = CellVector::const_iterator;
 // necessary to identify the row or column later and necessary for printing out meaningful information.
 struct CellVectorHeader
 {
-	CellVectorHeader() noexcept : index(0U), textInfo(), userData() {}
-	CellVectorHeader(uint i)  noexcept : index(i), textInfo(), userData() {}
+	CellVectorHeader() : index(0U), textInfo(), userData() {}
+	CellVectorHeader(uint i)  : index(i), textInfo(), userData() {}
 	CellVectorHeader(uint i, std::string& s) : index(i), textInfo(s), userData() {}
 	CellVectorHeader(uint i, std::string& s, std::any ud) : index(i), textInfo(s), userData(ud) {}
 
@@ -241,10 +241,10 @@ struct CellVectorHeaderComparator
 // consisting of the header and the cells
 struct TableCellVector
 {
-	TableCellVector()  noexcept : cellVectorHeader(), cell(), dropped(false) {}
-	TableCellVector(uint i)  noexcept : cellVectorHeader(i), cell(), dropped(false) {}
-	TableCellVector(uint i, std::string& s) noexcept : cellVectorHeader(i, s), cell(), dropped(false) {}
-	TableCellVector(uint i, std::string& s, std::any ud) noexcept : cellVectorHeader(i, s, ud), cell(), dropped(false) {}
+	TableCellVector()  : cellVectorHeader(), cell(), dropped(false) {}
+	TableCellVector(uint i)  : cellVectorHeader(i), cell(), dropped(false) {}
+	TableCellVector(uint i, std::string& s) : cellVectorHeader(i, s), cell(), dropped(false) {}
+	TableCellVector(uint i, std::string& s, std::any ud) : cellVectorHeader(i, s, ud), cell(), dropped(false) {}
 
 	CellVectorHeader cellVectorHeader;	// Header
 	CellVector cell;					// Vector of Cells

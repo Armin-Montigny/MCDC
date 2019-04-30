@@ -94,7 +94,10 @@ class Compiler
 public:
 	explicit Compiler(std::string& sourceCode, CodeGeneratorBase* codeGeneratorForParser) : scanner(sourceCode), parser(scanner, codeGeneratorForParser){}
 	Compiler() = delete;
-	Compiler& operator =(const Compiler& ) = delete;
+	Compiler(const Compiler&) = delete;
+	Compiler(const Compiler&&) = delete;
+	Compiler& operator =(const Compiler&) = delete;
+	Compiler& operator =(const Compiler&&) = delete;
 	virtual ~Compiler() {}
 
 	// Run the compiler, or "compile", or "do the compilation"
@@ -119,7 +122,10 @@ class CompilerForVM : public Compiler
 public:
 	explicit CompilerForVM(std::string& sourceCode, ObjectCode& objectCode) : Compiler(sourceCode,& codeGeneratorForVM), codeGeneratorForVM(objectCode, sourceCode) {}
 	CompilerForVM() = delete;
+	CompilerForVM(const CompilerForVM&) = delete;
+	CompilerForVM(const CompilerForVM&&) = delete;
 	CompilerForVM& operator =(const CompilerForVM&) = delete;
+	CompilerForVM& operator =(const CompilerForVM&&) = delete;
 
 #pragma warning(suppress: 26443)
 	virtual ~CompilerForVM() {}
@@ -136,12 +142,15 @@ class CompilerForAST : public Compiler
 public:
 	explicit CompilerForAST(std::string& sourceCode, VirtualMachineForAST& ast) : Compiler(sourceCode,& codeGeneratorForAST), codeGeneratorForAST(ast, sourceCode), virtualMachineForAST(ast){}
 	CompilerForAST() = delete;
+	CompilerForAST(const CompilerForAST&) = delete;
+	CompilerForAST(const CompilerForAST&&) = delete;
 	CompilerForAST& operator =(const CompilerForAST&) = delete;
+	CompilerForAST& operator =(const CompilerForAST&&) = delete;
 #pragma warning(suppress: 26443)
 	virtual ~CompilerForAST() {}
 	
 	// Run the compiler, or "compile", or "do the compilation"
-	virtual bool operator()() { bool rc = parser.parse(); if (rc) { virtualMachineForAST.calculateAstProperties(); } return rc; }	// The parser will do the work
+	bool operator()() override { const bool rc = parser.parse(); if (rc) { virtualMachineForAST.calculateAstProperties(); } return rc; }	// The parser will do the work
 
 protected:
 	// The code generator makes the differens in the backend. Front end is identical and will be reused from base class

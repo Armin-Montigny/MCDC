@@ -83,7 +83,12 @@ public:
 	
 	explicit MintermCalculator(std::string& booleanExpression) : objectCode(), compiler(booleanExpression, objectCode), vmfbe(), source(booleanExpression) {}
 	MintermCalculator() = delete;
+	MintermCalculator(const MintermCalculator&) = delete;
+	MintermCalculator(const MintermCalculator&&) = delete;
 	MintermCalculator& operator =(const MintermCalculator&) = delete;
+	MintermCalculator& operator =(const MintermCalculator&&) = delete;
+
+
 	// This function is made public, becuase we want to know, if the syntax of the boolean expression is OK.
 	bool runCompiler() { objectCode.clear(); compilerResultOK = compiler(); return compilerResultOK; }
 	// Calculate all minterms

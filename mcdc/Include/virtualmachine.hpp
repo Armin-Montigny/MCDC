@@ -113,10 +113,10 @@ protected:
 	// The executables for one opcode
 	void operationLoadID(uint source, uint destination, uint) { machineRegister[destination] = getSourceValue(source); }
 	void operationLoadNotID(uint source, uint destination, uint) { machineRegister[destination] = getSourceValueNegated(source); }
-	void operationOr(uint source1, uint source2, uint destination) { machineRegister[destination] = static_cast<uint>(machineRegister[source1] | machineRegister[source2]); }
-	void operationXor(uint source1, uint source2, uint destination) { machineRegister[destination] = static_cast<uint>(machineRegister[source1] ^ machineRegister[source2]); }
-	void operationAnd(uint source1, uint source2, uint destination) { machineRegister[destination] = static_cast<uint>(machineRegister[source1]&  machineRegister[source2]); }
-	void operationNot(uint source, uint destination, uint) { machineRegister[destination] = static_cast<uint>((~machineRegister[source]&  bitMask[0])); }
+	void operationOr(uint source1, uint source2, uint destination) { machineRegister[destination] = narrow_cast<MachineRegisterType>(machineRegister[source1] | machineRegister[source2]); }
+	void operationXor(uint source1, uint source2, uint destination) { machineRegister[destination] = narrow_cast<MachineRegisterType>(machineRegister[source1] ^ machineRegister[source2]); }
+	void operationAnd(uint source1, uint source2, uint destination) { machineRegister[destination] = narrow_cast<MachineRegisterType>(machineRegister[source1]&  machineRegister[source2]); }
+	void operationNot(uint source, uint destination, uint) { machineRegister[destination] = narrow_cast<MachineRegisterType>((~machineRegister[source]&  bitMask[0])); }
 	void operationEnd(uint source, uint, uint) { programResult = machineRegister[source]; }
 
 };

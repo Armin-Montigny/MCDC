@@ -133,10 +133,10 @@ enum class McdcType : uint
 	NONE
 };
 // Will be used to print the type of the string. And yes, I know that I am using an array
-inline constexpr const char* mcdcTypeToString(McdcType mt) noexcept
+inline const char* mcdcTypeToString(McdcType mt) 
 {
-	constexpr const char* McdcTypeTypeString[]{ "Unique Cause","Unique Cause + Masking","Masking","NONE" };
-	return McdcTypeTypeString[static_cast<uint>(mt)];
+	static const std::vector<const cchar*> McdcTypeTypeString { "Unique Cause", "Unique Cause + Masking", "Masking", "NONE" };
+	return McdcTypeTypeString.at(static_cast<uint>(mt));
 }
 
 
@@ -150,7 +150,15 @@ struct McdcIndependencePair
 {
 	explicit McdcIndependencePair(McdcType mt, uint v1, uint v2, cchar c) noexcept : mcdcType(mt), influencingCondition(c), independencePair(v1, v2) {}
 	McdcIndependencePair() noexcept : mcdcType(McdcType::NONE), influencingCondition(), independencePair() {}
-	McdcIndependencePair& operator =(const McdcIndependencePair& other) { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; return *this; }
+
+	McdcIndependencePair(const McdcIndependencePair& other)  noexcept { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; };
+	McdcIndependencePair(const McdcIndependencePair&& other) noexcept { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; };
+
+	McdcIndependencePair& operator =(const McdcIndependencePair& other) noexcept { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; return *this; }
+	McdcIndependencePair& operator =(const McdcIndependencePair&&) = delete;
+
+	~McdcIndependencePair() {}
+
 	McdcType mcdcType;
 	cchar influencingCondition;
 	IndependencePair independencePair;
@@ -196,7 +204,7 @@ protected:
 
 
 	// Print evaluated and calculated "best" test sets
-	void printResult(std::set<TestSet>& allTestSets, std::ostream& os, SymbolTable& symbolTable, MintermVector& mv);
+	void printResult(const std::set<TestSet>& allTestSets, std::ostream& os, const SymbolTable& symbolTable, const MintermVector& mv);
 
 	// After a new MCDC test pair has been found, we will add it to our interanl list for further processing
 	void add(McdcIndependencePair mcdcIndependencePair);
@@ -214,7 +222,7 @@ protected:
 
 	// Best cost and heuristic function for selecting minimum test pairs
 	sint compareScoreOf2TestValues(const TableCellVector& left, const TableCellVector& right);
-	sint calculateScoreForOneTest(uint test);	// Favours unique cause MCDC over others
+	sint calculateScoreForOneTest(uint test) noexcept;	// Favours unique cause MCDC over others
 
 
 	// If there is only one independence test pair per condition, we do not need to find a best solution for a coverage of variables

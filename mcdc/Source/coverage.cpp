@@ -384,7 +384,7 @@ void Coverage::findDominatingVector(TableVector &firstDimension, TableVector &se
 					const bool innerImpliesOuter = checkForImplication(firstDimension[inner], firstDimension[outer]);
 					sint bestCostFUnctionResult{ 0 };
 					// If both vectors are equal and a best cost function is existing then
-					if (outerImpliesInner && outerImpliesInner && bcf)
+					if (outerImpliesInner && innerImpliesOuter && bcf)
 					{
 						// Calculate the best cost
 						bestCostFUnctionResult = bcf(firstDimension[outer], firstDimension[inner]);
@@ -530,6 +530,7 @@ void Coverage::eraseTableCellVector(TableVector &firstDimension, TableVector &se
 void  Coverage::eraseAllDroppedTableCellVectors(TableVector &firstDimension, TableVector &secondDimension)
 {
 	// Iterate over complete table
+#if 0
 	sint index = narrow_cast<sint>(firstDimension.size()) - 1;
 	while (index >= 0)
 	{
@@ -539,6 +540,20 @@ void  Coverage::eraseAllDroppedTableCellVectors(TableVector &firstDimension, Tab
 			eraseTableCellVector(firstDimension, secondDimension,index);
 		}
 		--index;
+	}
+#endif
+	TableVector::size_type index = firstDimension.size(); 
+	if (null< TableVector::size_type>() < index)
+	{
+		do
+		{
+			--index;
+			if (firstDimension[index].dropped ||
+				(null<CellVector::size_type>() == firstDimension[index].cell.size()))
+			{
+				eraseTableCellVector(firstDimension, secondDimension, narrow_cast<Index>(index));
+			}
+		} while (index != 0);
 	}
 }
 

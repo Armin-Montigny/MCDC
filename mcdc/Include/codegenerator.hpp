@@ -111,6 +111,14 @@ class CodeGeneratorBase
 public: 
 	explicit CodeGeneratorBase(std::string& s) : source(s)  {}
 	virtual ~CodeGeneratorBase() {}
+
+	CodeGeneratorBase() = delete;
+	CodeGeneratorBase(const CodeGeneratorBase&) = delete;
+	CodeGeneratorBase(const CodeGeneratorBase&&) = delete;
+	CodeGeneratorBase& operator =(const CodeGeneratorBase&) = delete;
+	CodeGeneratorBase& operator =(const CodeGeneratorBase&&) = delete;
+
+
 	virtual void clear() = 0;	// Resets previously generated output
 	// The main "generate functions". These will be called by the parser, depending and the size of the handle in the grammar
 	virtual TokenWithAttribute generate(const Production& production, TokenWithAttribute& tokenWithAttribute1) = 0;
@@ -129,8 +137,11 @@ class CodeGeneratorForVM : public CodeGeneratorBase
 public:
 	explicit CodeGeneratorForVM(ObjectCode& objectCode, std::string& source) :CodeGeneratorBase(source), objectCode(objectCode), availabeRegister() {}
 	CodeGeneratorForVM() = delete;
-	CodeGeneratorForVM& operator =(const CodeGeneratorForVM& ) = delete;
-	virtual ~CodeGeneratorForVM() {}
+	CodeGeneratorForVM& operator =(const CodeGeneratorForVM&) = delete;
+	CodeGeneratorForVM& operator =(const CodeGeneratorForVM&&) = delete;
+	CodeGeneratorForVM(const CodeGeneratorForVM&) = delete;
+	CodeGeneratorForVM(const CodeGeneratorForVM&&) = delete;
+	~CodeGeneratorForVM() {}
 
 #pragma warning(suppress: 26440)
 	void clear() override { objectCode.clear(); }
@@ -160,10 +171,13 @@ class CodeGeneratorForAST : public CodeGeneratorBase
 {
 public:
 	explicit CodeGeneratorForAST(VirtualMachineForAST& a, std::string& source) : CodeGeneratorBase(source), ast(a) {}
-	explicit CodeGeneratorForAST() = delete;
+	CodeGeneratorForAST() = delete;
+	CodeGeneratorForAST(const CodeGeneratorForAST&) = delete;
+	CodeGeneratorForAST(const CodeGeneratorForAST&&) = delete;
 	CodeGeneratorForAST& operator=(const CodeGeneratorForAST&) = delete;
-#pragma warning(suppress: 26443)
-	virtual ~CodeGeneratorForAST() {}
+	CodeGeneratorForAST& operator=(const CodeGeneratorForAST&&) = delete;
+
+	~CodeGeneratorForAST() {}
 
 #pragma warning(suppress: 26440)
 	void clear() override { ast.clear(); currentIndex = 0U; }

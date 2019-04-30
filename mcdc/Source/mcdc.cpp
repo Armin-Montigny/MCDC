@@ -169,7 +169,7 @@ void Mcdc::add(McdcIndependencePair mcdcIndependencePair)
 // Calculate a score for one test value
 // calling function needs an sint as returning value, becuase it does want to make comparisons
 // by substracting 2 scores
-sint Mcdc::calculateScoreForOneTest(uint test)
+sint Mcdc::calculateScoreForOneTest(uint test) noexcept
 {
 	// A high resulting score is better than a low score
 	sint resultingScore{ 0 };
@@ -307,7 +307,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(c
 	// Test if a complete Test pair is part of the Coverage Result
 	// Resulting values that will be returned to function caller
 	bool found = false;					// We found a double match
-	McdcIndependencePair mipResult;		// And the corresponding test pair
+	McdcIndependencePair mipResult{};		// And the corresponding test pair
 
 	// We will check for only in test pairs with the same MCDC type
 	const McdcType mcdcType[3]{ McdcType::UniqueCause, McdcType::UniqueCauseMasking, McdcType::Masking };
@@ -354,7 +354,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(
 
 	// Please note. The sequence  is impotant here.
 	// We will find the first fiiting test pair in the below sequence of types
-	McdcType mcdcType[3]{ McdcType::UniqueCause, McdcType::UniqueCauseMasking, McdcType::Masking };
+	const McdcType mcdcType[3]{ McdcType::UniqueCause, McdcType::UniqueCauseMasking, McdcType::Masking };
 
 	for (uint mcdcTypeIndex = 0; !found && (mcdcTypeIndex < 3); ++mcdcTypeIndex)
 	{
@@ -454,7 +454,7 @@ void Mcdc::generateTestSets(SymbolTable& symbolTable, MintermVector& mintermVect
 			if (completeTestPairAvailable)
 			{
 				// Store this pair as a result
-				resultingIndependencePair = std::move(independencePairFull);
+				resultingIndependencePair = independencePairFull;
 				found = true;
 			}
 			else
@@ -465,7 +465,7 @@ void Mcdc::generateTestSets(SymbolTable& symbolTable, MintermVector& mintermVect
 				if (partTestPairAvailable)
 				{
 					// Found in this evaluation cycle
-					resultingIndependencePair = std::move(independencePairPart);
+					resultingIndependencePair = independencePairPart;
 					found = true;
 				}
 			}
@@ -524,7 +524,7 @@ void Mcdc::generateTestSets(SymbolTable& symbolTable, MintermVector& mintermVect
 //	9 : a = 1  b = 0  c = 0  d = 1    (0)
 //
 
-void Mcdc::printResult(std::set<TestSet>& allTestSets, std::ostream& os, SymbolTable& symbolTable, MintermVector& mv)
+void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, const SymbolTable& symbolTable, const MintermVector& mv)
 {
 	// If there is only one solution
 	// Meaning the coverage set had only one member
@@ -549,7 +549,7 @@ void Mcdc::printResult(std::set<TestSet>& allTestSets, std::ostream& os, SymbolT
 				os << c << '=' << ((0U !=  (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t));
+			const uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t));
 			os << "  (" << count << ")\n";
 		}
 		os << "\n\n";
@@ -592,7 +592,7 @@ void Mcdc::printResult(std::set<TestSet>& allTestSets, std::ostream& os, SymbolT
 				os << c << '=' << ((0U != (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)); 
+			const uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)); 
 			os << "  (" << count << ")\n";
 
 		}
@@ -786,7 +786,7 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 		if (testSetUniqueCauseMCDC.size() > 0)
 		{
 			osMcdc << "\n\n----------------------\nUnique Cause MCDC Test Set\n";
-			for (uint ts : testSetUniqueCauseMCDC)
+			for (const uint ts : testSetUniqueCauseMCDC)
 			{
 				osMcdc << ts << ' ';
 			}
@@ -795,7 +795,7 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 		if (testSetUniqueCauseMaskingMCDC.size() > 0)
 		{
 			osMcdc << "\n\n----------------------\nUnique Cause + Masking MCDC Test Set\n";
-			for (uint ts : testSetUniqueCauseMaskingMCDC)
+			for (const uint ts : testSetUniqueCauseMaskingMCDC)
 			{
 				osMcdc << ts << ' ';
 			}
@@ -804,7 +804,7 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 		if (testSetMaskingMCDC.size() > 0)
 		{
 			osMcdc << "\n\n----------------------\nMasking MCDC Test Set\n";
-			for (uint ts : testSetMaskingMCDC)
+			for (const uint ts : testSetMaskingMCDC)
 			{
 				osMcdc << ts << ' ';
 			}
