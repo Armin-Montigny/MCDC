@@ -150,7 +150,7 @@ public:
 	virtual ~CompilerForAST() {}
 	
 	// Run the compiler, or "compile", or "do the compilation"
-	bool operator()() override { const bool rc = parser.parse(); if (rc) { virtualMachineForAST.calculateAstProperties(); } return rc; }	// The parser will do the work
+	bool operator()() override { const bool rc{ parser.parse() }; if (rc) { virtualMachineForAST.calculateAstProperties(); } return rc; }	// The parser will do the work
 
 protected:
 	// The code generator makes the differens in the backend. Front end is identical and will be reused from base class

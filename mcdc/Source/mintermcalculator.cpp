@@ -95,14 +95,14 @@ MintermCalculator::MintermRangeVector MintermCalculator::calculateMintermRanges(
 	{
 		// More values to calculate than available threads
 		// Used to calculate the next begin of range
-		const uint rangeValue = upperBound / numberOfRanges;
+		const uint rangeValue = { upperBound / numberOfRanges };
 		// We of course always start with 0
-		uint startValue = 0;
+		uint startValue{ 0 };
 
 		for (uint ui = 0; ui < numberOfRanges; ++ui)
 		{
 			// Calculate next end of range value
-			uint endValue = startValue + rangeValue;
+			uint endValue{ startValue + rangeValue };
 			// If this is already over  the edge
 			if (endValue > (upperBound))
 			{
@@ -140,13 +140,13 @@ MintermVector MintermCalculator::calculate()
 	{
 		// CHeck how many variables are in and how many calculation loops we need to do
 		numberOfBooleanVariables = objectCode.symbolTable.numberOfSymbols();
-		const uint maxEvaluations = 1U << numberOfBooleanVariables;
+		const uint maxEvaluations{ 1U << numberOfBooleanVariables };
 
 		// If we have more than 10 boolean variables, then we will use multí threading to calculate the minterms
 		if (numberOfBooleanVariables > 10)
 		{
 			// Claculate the ranges to be calculated by each thread
-			MintermRangeVector mrv = calculateMintermRanges(numberOfThreads, maxEvaluations);
+			MintermRangeVector mrv{ calculateMintermRanges(numberOfThreads, maxEvaluations) };
 
 			// Futures for asynchronous functions. Wait for the thread to finish ang get the result
 			std::future<MintermVector> futures[numberOfThreads];
@@ -159,7 +159,7 @@ MintermVector MintermCalculator::calculate()
 			// Wait for the thread to end and read the result
 			for (uint i = 0; i < numberOfThreads; ++i)
 			{
-				MintermVector mvTemp = futures[i].get();
+				MintermVector mvTemp{ futures[i].get() };
 				// Store all results from all threads in one common function result
 				mintermVector.insert(mintermVector.end(), std::make_move_iterator(mvTemp.begin()), std::make_move_iterator(mvTemp.end()));
 			}
@@ -218,17 +218,17 @@ MintermVector MintermCalculator::calculateAsThread(MintermRange mt, ObjectCode o
 void printTruthTable(const std::string& source, MintermVector& mintermVector, const SymbolTable& symbolTable)
 {
 	// So many letter/symbols/variables/conditions/terminals were in the source string, the boolean expression
-	const uint symbolCount = symbolTable.numberOfSymbols();
+	const uint symbolCount{ symbolTable.numberOfSymbols() };
 	// So many line we will show
-	const uint32 maxEvaluations = bitMask[symbolCount];
+	const uint32 maxEvaluations{ bitMask[symbolCount] };
 	// The width of a string containg the decimal equivalent of the biggest number
 	// Needed for formatting
-	const MinTermType maxLengthDecimalEquivalent = static_cast<uint>(std::log10(maxEvaluations)) + 1;
+	const MinTermType maxLengthDecimalEquivalent{ static_cast<uint>(std::log10(maxEvaluations)) + 1 };
 
 	// Determine where the output is streamed to
-	const bool predicateForOutputToFile = (symbolCount > 4);
+	const bool predicateForOutputToFile{ (symbolCount > 4) };
 	OutStreamSelection outStreamSelection(ProgramOption::pttc, predicateForOutputToFile) ;
-	std::ostream& os = outStreamSelection();
+	std::ostream& os{ outStreamSelection() };
 
 	// Header Line
 	os << "------------------ Truth table for boolean expression:\n\n'"<<source<<"'\n\n";
@@ -246,7 +246,7 @@ void printTruthTable(const std::string& source, MintermVector& mintermVector, co
 		b = i; // Assign running value to bitset
 		// Check if the running value is in the minterm list
 		// If so, then result is 1 , else 0
-		uint result = (std::find(mintermVector.begin(), mintermVector.end(), i) != mintermVector.end()) ? 1U : 0U;
+		uint result{ (std::find(mintermVector.begin(), mintermVector.end(), i) != mintermVector.end()) ? 1U : 0U };
 		// Print decimal equivalent of running variable, the bitset and the result
 		os << std::setw(static_cast<std::streamsize>(maxLengthDecimalEquivalent) + 1) << i << " " << b.to_string().substr(26 - symbolCount) << "    " << result << '\n';
 	}

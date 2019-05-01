@@ -68,7 +68,7 @@
 
 // This is the indicator for no linkage. So if the node has no children, we will set this value in the link field
 #pragma warning(suppress: 26472)
-constexpr uint ASTNoLinkedElement = static_cast<uint>(-1);
+constexpr uint ASTNoLinkedElement{ UINT_MAX };
 
 
 
@@ -180,7 +180,7 @@ protected:
 	void setSubTreetoMasked(uint index);
 
 	// Helper Variables. Just used for printing the AST
-	uint row{ 0 };
+	uint row{ 0U };
 	uint level{ 0U };
 
 	// And this is the source value for the variables in the AST. The smallest letter is the MSB

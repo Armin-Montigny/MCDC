@@ -120,7 +120,7 @@ void  QuineMcluskey::initializeCoverageForPrimeImplicants(Coverage& coverageForP
 	for (PrimeImplicantType primeImplicant : primeImplicantSetResult)
 	{
 		// Additionally store the prime implicant name in the column header
-		std::string primeImplicantString = primeImplicant.toString(symbolTable);
+		std::string primeImplicantString{ primeImplicant.toString(symbolTable) };
 		coverageForPrimeImplicants.addColumn(primeImplicant.term, primeImplicantString, primeImplicant);
 	}
 }
@@ -132,19 +132,19 @@ void  QuineMcluskey::initializeCoverageForPrimeImplicants(Coverage& coverageForP
 bool checkCoverForCell(const CellVectorHeader& minTermRowHeader, CellVectorHeader& primeImplicantColumnHeader)
 {
 	// The Prime Implicant Info has been stored in the any field of the column header´. Get it
-	const PrimeImplicantType resultingPrimeImplicant = std::any_cast<PrimeImplicantType>(primeImplicantColumnHeader.userData);
+	const PrimeImplicantType resultingPrimeImplicant{ std::any_cast<PrimeImplicantType>(primeImplicantColumnHeader.userData) };
 	// And, get the minterm
-	const MinTermType mtnMinTerm = minTermRowHeader.index;
+	const MinTermType mtnMinTerm{ minTermRowHeader.index };
 
 	// We want to know, if the minterm is covered by the prime implicant
 	bool result{ false };
 
 	// Check, if the prime implicant implies the minterm
-	const MinTermNumber mtnPrimeImplicant = resultingPrimeImplicant.term;
-	const MinTermNumber primeImplicantMask = resultingPrimeImplicant.mask;
-	const MinTermNumber primeImplicantMaskNegated = ~resultingPrimeImplicant.mask;
-	const MinTermNumber mtnMinTermMasked = mtnMinTerm&  primeImplicantMaskNegated;
-	const MinTermNumber mtnPrimeImplicantMasked = mtnPrimeImplicant&  primeImplicantMaskNegated;
+	const MinTermNumber mtnPrimeImplicant{ resultingPrimeImplicant.term };
+	const MinTermNumber primeImplicantMask{ resultingPrimeImplicant.mask };
+	const MinTermNumber primeImplicantMaskNegated{ ~resultingPrimeImplicant.mask };
+	const MinTermNumber mtnMinTermMasked{ mtnMinTerm & primeImplicantMaskNegated };
+	const MinTermNumber mtnPrimeImplicantMasked{ mtnPrimeImplicant & primeImplicantMaskNegated };
 
 	if (mtnMinTermMasked == mtnPrimeImplicantMasked)
 	{
@@ -175,9 +175,9 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 	std::string minimumDisjunctiveNormalForm;
 
 	// Output control for showing the result of the minimization of the prime implicant table
-	const bool predicateForOutputToFile = (symbolTable.numberOfSymbols() > 5);
+	const bool predicateForOutputToFile{ (symbolTable.numberOfSymbols() > 5) };
 	OutStreamSelection outStreamSelection(ProgramOption::ppirtc, predicateForOutputToFile);
-	std::ostream& os = outStreamSelection();
+	std::ostream& os{ outStreamSelection() };
 
 	os << "\n\n\n------------------ Try to find Minmum Disjunctive Normal form for boolean expression:\n\n'" << source << "'\n\n";
 
@@ -192,7 +192,7 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 
 
 	// Reduce the primeimplicant table. May have several resulting vectors
-	CoverageResult cr = coverageForPrimeImplicants.reduce(os);
+	CoverageResult cr{ coverageForPrimeImplicants.reduce(os) };
 
 	// From possible many results, try to find one result	
 	// Some heuristic methods . . .
@@ -205,9 +205,9 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 
 	{
 		// Count terms
-		uint maxTerms = narrow_cast<uint>(std::max_element(cr.begin(), cr.end(), [](const CellVectorHeaderSet& cvhsLeft, const CellVectorHeaderSet& cvhsRight) noexcept {return cvhsLeft.size() < cvhsRight.size(); })->size());
-		std::vector<uint> numberOfLiterals;				// Count number of literals per possible result
-		std::vector<uint> numberOfLowerCaseLiterals;	// Count number of lowercase literals per possible result
+		uint maxTerms{ narrow_cast<uint>(std::max_element(cr.begin(), cr.end(), [](const CellVectorHeaderSet & cvhsLeft, const CellVectorHeaderSet & cvhsRight) noexcept {return cvhsLeft.size() < cvhsRight.size(); })->size()) };
+		std::vector<uint> numberOfLiterals{};				// Count number of literals per possible result
+		std::vector<uint> numberOfLowerCaseLiterals{};	// Count number of lowercase literals per possible result
 
 		// Iterate over all possible results in the coverage set
 		for (CellVectorHeaderSet& cvhs : cr)
@@ -234,7 +234,7 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 
 
 		// This is the maximumn number of literals in a solution for all coverage sets
-		uint maxNumberOfLiterals = *std::max_element(numberOfLiterals.begin(), numberOfLiterals.end());
+		uint maxNumberOfLiterals{ *std::max_element(numberOfLiterals.begin(), numberOfLiterals.end()) };
 
 		// We use some heuristic function, magically defined, to calculate some judgement for a "good" result.
 		// Higher number is better
@@ -242,9 +242,9 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 		uint maxResultIndex{ 0 };	// And index in the coverage with the best judgement
 		for (uint i = 0; i < cr.size(); ++i)
 		{
-			const uint result = (maxNumberOfLiterals - numberOfLiterals[i]) * 5 +   // Few literals result in high score (this is high prio)
+			const uint result{ (maxNumberOfLiterals - numberOfLiterals[i]) * 5 +   // Few literals result in high score (this is high prio)
 				(maxNumberOfLiterals - numberOfLowerCaseLiterals[i]) * 4 +			// Lowercase letters are better than uppercase (Uppercase are negated lowercase letters)
-				(maxTerms - narrow_cast<uint>(cr[i].size())) * 8;					// The number of minterms in the resulting DNF has top prio
+				(maxTerms - narrow_cast<uint>(cr[i].size())) * 8 };					// The number of minterms in the resulting DNF has top prio
 			if (result > maxResult)	// Is this the best result so far?
 			{
 				maxResult = result;	// Remember best result
@@ -255,7 +255,7 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 
 		// This is for output only
 		// Get the number of Product Terms in the best solution
-		const uint NumberOfTermsInBestSolution = narrow_cast<uint>(cr[maxResultIndex].size());
+		const uint NumberOfTermsInBestSolution{ narrow_cast<uint>(cr[maxResultIndex].size()) };
 		uint TermCounter{ 0 };
 
 		// Build minimum disjunctive normal form, Minimun DNF, as a string
@@ -283,7 +283,7 @@ std::string QuineMcluskey::getMinimumDisjunctiveNormalForm(MintermVector& mv, co
 
 
 // Constructor is initializing the mode of operation depending on comand line option
-QuineMcluskey::QuineMcluskey() noexcept
+QuineMcluskey::QuineMcluskey() 
 {
 	// Show full Quine& McCluskey Reduction Table(will be a bit slower)
 	if (programOption.option[ProgramOption::sfqmt].optionSelected)
@@ -326,7 +326,7 @@ void QuineMcluskey::initiate(MintermVector& mv)
 		}
 
 		// Get the number of bits for this minterm
-		const NumberOfBitsCountType nb = numberOfSetBits(mtn);
+		const NumberOfBitsCountType nb{ numberOfSetBits(mtn) };
 		
 		// And add this table row to the grouped-by-number-of-bits-table
 		bitsAndMinTerms[nb].push_back(tableEntry);
@@ -364,9 +364,9 @@ void QuineMcluskey::compareTwoEntries(TableForBitCount& upper, TableForBitCount&
 			if (teUpper.maskForEliminatedBit == telower.maskForEliminatedBit)
 			{
 				// XOR for the 2 terms, will find the different set bits between 2 terms
-				const MinTermType termDifference = (teUpper.mintermLower ^ telower.mintermLower);
+				const MinTermType termDifference{ (teUpper.mintermLower ^ telower.mintermLower) };
 				// If there is only a difference in one bit. So is there only one bit set in the difference we just calculated
-				const bool differenceInOnlyOneBit = (!(termDifference&  (termDifference - 1)));  // Taken from "Hackers Delight"
+				const bool differenceInOnlyOneBit{ (!(termDifference & (termDifference - 1))) };  // Taken from "Hackers Delight"
 				// So, we found 2 terms, where one variable can be eliminated
 				if (differenceInOnlyOneBit)
 				{
@@ -446,10 +446,10 @@ void QuineMcluskey::reduce()
 		// We simple have defined the table with a fixed number. Without knowing 
 		// how many bist are set at all. We will now find out the table index, where a bit is set
 		// And here, the highest index and the lowest index
-		const uint upper = getHighestIndexOfBitCountEntry(currentReductionTableColumn);
-		const uint lower = getLowestIndexOfBitCountEntry(currentReductionTableColumn);
+		const uint upper{ getHighestIndexOfBitCountEntry(currentReductionTableColumn) };
+		const uint lower{ getLowestIndexOfBitCountEntry(currentReductionTableColumn) };
 		// We want to calculate ranges of "bit-set-numbers" that we can give to multiple threads
-		BitCountRangeVector bcrv = calculateBoundsForMultiThreading(upper, lower);
+		BitCountRangeVector bcrv{ calculateBoundsForMultiThreading(upper, lower) };
 		// If we will do multi threading
 		if (bcrv.size() > 0)
 		{
@@ -458,8 +458,8 @@ void QuineMcluskey::reduce()
 			// Get the ranges
 			for (uint ui = 0; ui < bcrv.size(); ++ui)
 			{
-				uint u = bcrv[ui].first;
-				uint l = bcrv[ui].second;
+				uint u{ bcrv[ui].first };
+				uint l{ bcrv[ui].second };
 				// And call calculation function in a thread
 				futures[ui] = std::async(&QuineMcluskey::compareFromBitCountUpperToBitCountLower, this, currentReductionTableColumn, u, l);
 			}
@@ -517,7 +517,7 @@ void QuineMcluskey::collectPrimeImplicants(uint indexReductionTableColumn)
 // Check, if we found all prime implicants or if we need to continue searching
 bool QuineMcluskey::checkIfFurtherEvaluationNecessary(uint indexReductionTableColumn)
 {
-	bool result = false;	// We initially assume that no further evealuation is necessary
+	bool result{ false };	// We initially assume that no further evealuation is necessary
 	// Go through all sub table (gouped by number of bits) for this reduction table
 	for (const TableForBitCount& tfbc : reductionTable[indexReductionTableColumn])
 	{
@@ -594,20 +594,20 @@ QuineMcluskey::BitCountRangeVector QuineMcluskey::calculateBoundsForMultiThreadi
 	BitCountRangeVector result;		// Here will store the resulting ranges
 
 	// For the claculation we atrt in the middle of the given overall range
-	const uint middle = static_cast<uint>(std::ceil((upper - lower) / 2 + 1));
+	const uint middle{ static_cast<uint>(std::ceil((upper - lower) / 2 + 1)) };
 
 	// We start with a delta of one, so the next range will be only on more or less than the current value
-	sint delta = 1;
+	sint delta{ 1 };
 	// We will start with the middle and then go up and down
-	sint currentForDirectionLower = static_cast<sint>(middle);
-	sint nextForDirectionLower = static_cast<sint>(middle) - delta;
+	sint currentForDirectionLower{ static_cast<sint>(middle) };
+	sint nextForDirectionLower{ static_cast<sint>(middle) - delta };
 
-	sint currentForDirectionUpper = static_cast<sint>(middle) + delta;
-	sint nextForDirectionUpper = static_cast<sint>(middle);
+	sint currentForDirectionUpper{ static_cast<sint>(middle) + delta };
+	sint nextForDirectionUpper{ static_cast<sint>(middle) };
 
 	//Depending on the number of available threads we will define ranges for up and for down
-	const uint maxLoopCount = (numberOfThreads >> 1);
-	const uint lastLoopCount = maxLoopCount - 1;
+	const uint maxLoopCount{ (numberOfThreads >> 1) };
+	const uint lastLoopCount{ maxLoopCount - 1 };
 
 
 	for (uint i = 0; i < maxLoopCount; ++i)
@@ -682,12 +682,12 @@ std::string PrimeImplicantType::toString(const SymbolTable& symbolTable) const
 {
 	std::ostringstream result;
 	// Maximum number of symbols in the symbol table
-	const uint symbolCount = symbolTable.numberOfSymbols();
+	const uint symbolCount{ symbolTable.numberOfSymbols() };
 	// We will check, which bit is set or not. For the set bits we will print a symbol
-	MinTermNumber maskSelector = bitMask[symbolCount - 1];
+	MinTermNumber maskSelector{ bitMask[symbolCount - 1] };
 
 	// We will iterate over all symbols
-	std::set<cchar>::iterator symbolIterator = symbolTable.symbol.begin();
+	std::set<cchar>::iterator symbolIterator{ symbolTable.symbol.begin() };
 
 	// And for the number of symbols
 	for (uint ui = 0; ui < symbolCount; ++ui)
@@ -696,8 +696,8 @@ std::string PrimeImplicantType::toString(const SymbolTable& symbolTable) const
 		// Is there a symbol at this position?
 		if (!(maskSelector&  mask))
 		{
-			const MinTermNumber mt = term;
-			const MinTermNumber mtMasked = mt&  maskSelector; // This will result in true, if there is a positive variable at this position 
+			const MinTermNumber mt{ term };
+			const MinTermNumber mtMasked{ mt & maskSelector }; // This will result in true, if there is a positive variable at this position 
 			// Distihuish between lower case and upper case.
 			result << (mtMasked ? *symbolIterator : static_cast<cchar>((*symbolIterator) - ('a' - 'A')));
 		}
@@ -715,10 +715,11 @@ void QuineMcluskey::printReductionTable(const SymbolTable& symbolTable, const st
 {
 	// Tetermin, to which stream the output should go
 	// Showing tables for more than 6 variables is too much data
-	const uint maxNumberOfBits = narrow_cast<uint>(symbolTable.symbol.size());
-	const bool predicateForOutputToFile = (maxNumberOfBits > 6);
+	const uint maxNumberOfBits{ narrow_cast<uint>(symbolTable.symbol.size()) };
+	const uint maxNumberOfBitsMinusOne{ maxNumberOfBits - 1 };
+	const bool predicateForOutputToFile{ (maxNumberOfBits > 6) };
 	OutStreamSelection outStreamSelection(ProgramOption::pqmtc, predicateForOutputToFile);
-	std::ostream& os = outStreamSelection();
+	std::ostream& os{ outStreamSelection() };
 
 	// Header
 	os << "------------------ Print Quine McCluskey Reduction tables for boolean expression\n\n'" << source << "'\n\n";
@@ -742,8 +743,8 @@ void QuineMcluskey::printReductionTable(const SymbolTable& symbolTable, const st
 		uint counter{ 1 };
 
 		// We do not want to print empty tables
-		const uint upper = getHighestIndexOfBitCountEntry(currentTableIndex);
-		const uint lower = getLowestIndexOfBitCountEntry(currentTableIndex);
+		const uint upper{ getHighestIndexOfBitCountEntry(currentTableIndex) };
+		const uint lower{ getLowestIndexOfBitCountEntry(currentTableIndex) };
 
 		// So, for all the sub tables grouped by the number of set bits
 		for (uint bitCount = lower; bitCount <= upper; ++bitCount)
@@ -755,18 +756,18 @@ void QuineMcluskey::printReductionTable(const SymbolTable& symbolTable, const st
 				os << std::left << std::setw(6)<< counter++<< std::setw(4) << narrow_cast<uint>(bitCount) << "  ";
 
 				// Get the minterm and the mask. So, see, what avriables are in there
-				const MinTermNumber mtn = te.mintermLower;
-				const MinTermNumber deletedPos = te.maskForEliminatedBit;
+				const MinTermNumber mtn{ te.mintermLower };
+				const MinTermNumber deletedPos{ te.maskForEliminatedBit };
 
 				// This will be used to iterate over the single literals in the minterms
 				// Start with this vale und will be shifted right
-				MinTermNumber bitMaskLocal =bitMask[maxNumberOfBits - 1];
-
+				MinTermNumber bitMaskLocal{ bitMask[maxNumberOfBitsMinusOne] };
+				
 				// Now check all bits in the term
 				for (uint bitIndex = 0; bitIndex < maxNumberOfBits; ++bitIndex)
 				{
 					// Defualt is 0
-					cchar output = '0';
+					cchar output{ '0' };
 					// If the varaible has been deleted
 					if (deletedPos&  bitMaskLocal)
 					{

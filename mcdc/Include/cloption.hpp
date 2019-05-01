@@ -352,8 +352,8 @@ namespace OutputHandling
 {
 
 	// Some constants to make more easy and readbale names for file open modes
-	constexpr std::ios_base::openmode IosModeAppend = std::ios_base::out | std::ios_base::app;
-	constexpr std::ios_base::openmode IosModeOverwrite = std::ios_base::out;
+	constexpr std::ios_base::openmode IosModeAppend{ std::ios_base::out | std::ios_base::app };
+	constexpr std::ios_base::openmode IosModeOverwrite{ std::ios_base::out };
 	// Depending on slected  options, program output can be driected to differen streams
 	// So output of data into a file, into more than on file and or to std::cout
 

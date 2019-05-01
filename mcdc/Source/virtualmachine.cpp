@@ -81,10 +81,10 @@ void VirtualMachineForBooleanExpressions::load(ObjectCode& objectCode, const std
 	numberOfLiterals = objectCode.symbolTable.numberOfSymbols();
 	
 	// In order to select the correct output destination, we want to find some complexity metric
-	const uint opCodeSize = narrow_cast<uint>(objectCode.opCode.size());
-	const bool predicateForOutputToFile = (opCodeSize > 150);
+	const uint opCodeSize{ narrow_cast<uint>(objectCode.opCode.size()) };
+	const bool predicateForOutputToFile{ (opCodeSize > 150) };
 	OutStreamSelection outStreamSelection(ProgramOption::pcoc, predicateForOutputToFile);
-	std::ostream& os = outStreamSelection();
+	std::ostream& os{ outStreamSelection() };
 
 	// Inform the user
 	os << "\n------------------ Compiling boolean expression\n\n'" << source << "'\n\n------------------ Compilation result. Virtual Machine Executable Code\n\n" ;

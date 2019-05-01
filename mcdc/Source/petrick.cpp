@@ -113,7 +113,7 @@ ProductTermVector PetricksMethod::operator ()(const CNF& cnf)
 {
 	// We select an iterative approach. Start with the first Element of the CNF (which is a DNF)
 	// And we sorte the result of each iterative operation again in this element
-	DNF resultingDNF = cnf[0];
+	DNF resultingDNF{ cnf[0] };
 	// We will always start with the element 1 (not element 0) becuase in 0 is the initial value
 	// or respectively the intermediate result
 	for (CNF::size_type dnfInCnfIndex = 1; dnfInCnfIndex < cnf.size(); ++dnfInCnfIndex)
@@ -128,7 +128,7 @@ ProductTermVector PetricksMethod::operator ()(const CNF& cnf)
 			// For (1+2)(3+4)  this would be the (3+4) part
 			for (const ProductTerm& productTermRightSide : cnf[dnfInCnfIndex])
 			{
-				ProductTerm productTerm = productTermLeftSide; // Resulting Product term is now 1
+				ProductTerm productTerm{ productTermLeftSide }; // Resulting Product term is now 1
 				// Add all elements from the right side
 				productTerm.insert(productTermRightSide.begin(), productTermRightSide.end());	// Resulting Product term is now 1,2
 				intermediateCalculatedDNF.insert(std::move(productTerm));  // Store this one
@@ -143,7 +143,7 @@ ProductTermVector PetricksMethod::operator ()(const CNF& cnf)
 	// Now we have the result (with 10 lines of code). The result contains all product terms in DNF
 	// But for our prupose we are only interested in the minimum size terms
 	// so, lets find the element with the minimu size (can be more than one)
-	uint minLength = narrow_cast<uint>(std::min_element(resultingDNF.begin(), resultingDNF.end(), [](const ProductTerm& left, const ProductTerm& right) noexcept {return left.size() < right.size(); })->size());
+	uint minLength{ narrow_cast<uint>(std::min_element(resultingDNF.begin(), resultingDNF.end(), [](const ProductTerm & left, const ProductTerm & right) noexcept {return left.size() < right.size(); })->size()) };
 	// And from the big list of the DNF with all product terms, we copy all elements having the minimu size to the result. These are our best coverage sets
 	ProductTermVector cheapestVector;
 	// Copy result and return it to caller

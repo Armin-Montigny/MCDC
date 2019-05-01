@@ -203,13 +203,13 @@ void Coverage::printTable(std::ostream& os)
 
 		// For formatting issues we need the biggest size of a column and row header
 		// Get the biggest size / number of  characters of a column header
-		TableVectorIterator maxTVI = std::max_element(tableColumns.begin(), tableColumns.end(), [](const TableCellVector &tcvLeft, const TableCellVector &tcvRight) noexcept {return tcvLeft.cellVectorHeader.textInfo.size() < tcvRight.cellVectorHeader.textInfo.size(); });
+		TableVectorIterator maxTVI{ std::max_element(tableColumns.begin(), tableColumns.end(), [](const TableCellVector & tcvLeft, const TableCellVector & tcvRight) noexcept {return tcvLeft.cellVectorHeader.textInfo.size() < tcvRight.cellVectorHeader.textInfo.size(); }) };
 #pragma warning(suppress: 26489)
-		const uint maxColumnHeaderLength = (maxTVI != tableColumns.end()) ? narrow_cast<uint>(maxTVI->cellVectorHeader.textInfo.size()): 1;
+		const uint maxColumnHeaderLength{ (maxTVI != tableColumns.end()) ? narrow_cast<uint>(maxTVI->cellVectorHeader.textInfo.size()) : 1 };
 		// Get the biggest size / number of  characters of a column header
 		maxTVI = std::max_element(tableRows.begin(), tableRows.end(), [](const TableCellVector &tcvLeft, const TableCellVector &tcvRight) noexcept {return tcvLeft.cellVectorHeader.textInfo.size() < tcvRight.cellVectorHeader.textInfo.size(); });
 #pragma warning(suppress: 26489)
-		const uint maxRowHeaderLength = (maxTVI != tableRows.end()) ? narrow_cast<uint>(maxTVI->cellVectorHeader.textInfo.size()) : 1;
+		const uint maxRowHeaderLength{ (maxTVI != tableRows.end()) ? narrow_cast<uint>(maxTVI->cellVectorHeader.textInfo.size()) : 1 };
 
 
 		// Print Column Headers
@@ -380,8 +380,8 @@ void Coverage::findDominatingVector(TableVector &firstDimension, TableVector &se
 				if (!firstDimension[inner].dropped)
 				{
 					// CHeck, who implies whowm. Maybe right to left or left to right
-					const bool outerImpliesInner = checkForImplication(firstDimension[outer], firstDimension[inner]);
-					const bool innerImpliesOuter = checkForImplication(firstDimension[inner], firstDimension[outer]);
+					const bool outerImpliesInner{ checkForImplication(firstDimension[outer], firstDimension[inner]) };
+					const bool innerImpliesOuter{ checkForImplication(firstDimension[inner], firstDimension[outer])};
 					sint bestCostFUnctionResult{ 0 };
 					// If both vectors are equal and a best cost function is existing then
 					if (outerImpliesInner && innerImpliesOuter && bcf)
@@ -456,7 +456,7 @@ bool  Coverage::checkForImplication( TableCellVector &first,  TableCellVector &s
 		// This (left) dropped and other side (second) is covering (and not dropped) means: No implication   
 		if (first.cell[riFirst].dropped)
 		{
-			TableCellCIterator tci = std::find_if(second.cell.begin(), second.cell.end(), [first, riFirst](const TableCell &tc) { return tc.crossReference == first.cell[riFirst].crossReference; });
+			TableCellCIterator tci{ std::find_if(second.cell.begin(), second.cell.end(), [first, riFirst](const TableCell & tc) { return tc.crossReference == first.cell[riFirst].crossReference; }) };
 			if ((second.cell.end() != tci) && (!tci->dropped))
 			{
 				result = false;
@@ -472,7 +472,7 @@ bool  Coverage::checkForImplication( TableCellVector &first,  TableCellVector &s
 		if (!second.cell[riSecond].dropped)
 		{
 			// Check the left side (first)
-			TableCellCIterator tci = std::find_if(first.cell.begin(), first.cell.end(), [second, riSecond](const TableCell &tc) { return tc.crossReference == second.cell[riSecond].crossReference; });
+			TableCellCIterator tci{ std::find_if(first.cell.begin(), first.cell.end(), [second, riSecond](const TableCell & tc) { return tc.crossReference == second.cell[riSecond].crossReference; }) };
 			// If there is nothing in that row or column and if the first is dropped
 			// Then no implication
 			if ((first.cell.end() == tci) || (tci->dropped))
@@ -530,19 +530,7 @@ void Coverage::eraseTableCellVector(TableVector &firstDimension, TableVector &se
 void  Coverage::eraseAllDroppedTableCellVectors(TableVector &firstDimension, TableVector &secondDimension)
 {
 	// Iterate over complete table
-#if 0
-	sint index = narrow_cast<sint>(firstDimension.size()) - 1;
-	while (index >= 0)
-	{
-		if (firstDimension[index].dropped ||
-			(null<CellVector::size_type>() == firstDimension[index].cell.size()))
-		{
-			eraseTableCellVector(firstDimension, secondDimension,index);
-		}
-		--index;
-	}
-#endif
-	TableVector::size_type index = firstDimension.size(); 
+	TableVector::size_type index{ firstDimension.size() };
 	if (null< TableVector::size_type>() < index)
 	{
 		do
@@ -609,11 +597,11 @@ CoverageResult Coverage::reduce(std::ostream& os)
 
 		// Operation 1
 		// Try to find an esstial column
-		if (!isTableEmpty() )		// Sanity check. Operate only, if data is avaliable
+		if (!isTableEmpty())		// Sanity check. Operate only, if data is avaliable
 		{
 			os << "Checking for essential columns:       ";
 			// Local check, if something could be reduced for this specific reduction operation
-			const ulong numberOfNoneDroppedCellsBeforeOperation = countNotDroppedTableElements();
+			const ulong numberOfNoneDroppedCellsBeforeOperation{ countNotDroppedTableElements() };
 
 			findEssentialColumn();
 
@@ -625,7 +613,7 @@ CoverageResult Coverage::reduce(std::ostream& os)
 			else
 			{
 				os << "Found!  Essential Columns now:    ";
-				for (const CellVectorHeader &columnHeader : essentialColumn)
+				for (const CellVectorHeader& columnHeader : essentialColumn)
 				{
 					os << columnHeader.textInfo << ' ';
 				}
@@ -647,7 +635,7 @@ CoverageResult Coverage::reduce(std::ostream& os)
 		{
 			os << "Checking for dominating columns:      ";
 			// Local check, if something could be reduced for this specific reduction operation
-			const ulong numberOfNoneDroppedCellsBeforeOperation = countNotDroppedTableElements();
+			const ulong numberOfNoneDroppedCellsBeforeOperation{ countNotDroppedTableElements() };
 
 			findDominatingColumn();
 
@@ -674,7 +662,7 @@ CoverageResult Coverage::reduce(std::ostream& os)
 		{
 			os << "Checking for dominating rows:         ";
 			// Local check, if something could be reduced for this specific reduction operation
-			const ulong numberOfNoneDroppedCellsBeforeOperation = countNotDroppedTableElements();
+			const ulong numberOfNoneDroppedCellsBeforeOperation{ countNotDroppedTableElements() };
 
 			findDominatingRow();
 
@@ -700,7 +688,7 @@ CoverageResult Coverage::reduce(std::ostream& os)
 
 	} while ((null<ulong>() != newNumberOfNoneDroppedCells) && (newNumberOfNoneDroppedCells != oldNumberOfNoneDroppedCells));
 
-	
+
 	// All conventional reduction operation performed
 	// Now use Petricks methos in case of a cyclic core left
 	if (null<ulong>() != newNumberOfNoneDroppedCells)
@@ -748,7 +736,7 @@ CoverageResult Coverage::reduce(std::ostream& os)
 	if (coverageSet.size() > 0)
 	{
 		for (uint i = 0; i < coverageSet.size(); ++i)
-		{			
+		{
 			CellVectorHeaderSet cvhs;
 			// The essential columns will always be a part of the solution.
 			// First add the essential columns
@@ -779,8 +767,8 @@ CoverageResult Coverage::reduce(std::ostream& os)
 	// Printout the result
 	os << "\n\n------------------ Result of Coverage Analysis\n\n";
 
-	const uint numberOfEssentialColumns = narrow_cast<uint>(essentialColumn.size());
-	const uint numberOfCoverageSets = narrow_cast<uint>(coverageSet.size());
+	const uint numberOfEssentialColumns{ narrow_cast<uint>(essentialColumn.size()) };
+	const uint numberOfCoverageSets { narrow_cast<uint>(coverageSet.size()) };
 	if (numberOfEssentialColumns > 0)
 	{
 		os << "There are  " << numberOfEssentialColumns << "  essential columns:  ";
@@ -800,11 +788,8 @@ CoverageResult Coverage::reduce(std::ostream& os)
 			//const ProductTerm &pt = coverageSet[i];
 			for (const BooleanVariable b : coverageSet[i])
 			{
-				const CellVectorHeader& cvh = tableColumns[b].cellVectorHeader;
-				//for (const CellVectorHeader & cvh : coverageResult[i])
-				{
-					os << cvh.textInfo << ' ';
-				}
+				const CellVectorHeader& cvh{ tableColumns[b].cellVectorHeader };
+				os << cvh.textInfo << ' ';
 			}
 			os << '\n';
 		}

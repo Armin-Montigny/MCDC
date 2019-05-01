@@ -148,7 +148,7 @@ using PrimeImplicantSet = std::set<PrimeImplicantType, PrimeImplicantTypeCompare
 class QuineMcluskey
 {
 public:
-	QuineMcluskey() noexcept;
+	QuineMcluskey();
 
 	std::string getMinimumDisjunctiveNormalForm(MintermVector& mv, const SymbolTable& symbolTable, const std::string& source);
 

@@ -38,7 +38,7 @@
 
 void showHelp();
 
-sint main(const sint argc, cchar* argv[])
+sint main(const sint argc, const cchar* const argv[])
 {
     static_assert(sizeof(uint)==4, "This programm needs a 4 byte integer type"); // compile-time error if not
 
@@ -79,7 +79,7 @@ sint main(const sint argc, cchar* argv[])
     MintermCalculator mc(source);
 
 	// Compile the source code boolean expression 
-    const bool termIsOk = mc.runCompiler();
+	const bool termIsOk{ mc.runCompiler() };
 
 	// CHeck result of compiler. Maybe syntax error
     if (!termIsOk)
@@ -135,7 +135,7 @@ sint main(const sint argc, cchar* argv[])
 
 		// Start the Quine & McCluskey Algorithm and get aminimum DNF
         QuineMcluskey quineMcluskey;
-        std::string minimizedSource = quineMcluskey.getMinimumDisjunctiveNormalForm(mv, symbolTable, source);
+		std::string minimizedSource{ quineMcluskey.getMinimumDisjunctiveNormalForm(mv, symbolTable, source) };
         std::cout << "\n\nResult of Quine and McCluskey minimizing algorithm:\n\n'" << minimizedSource << "'\n\n";
 
 		// We can continue to do the MCDC analysis with the original source code
@@ -159,7 +159,7 @@ sint main(const sint argc, cchar* argv[])
         
 		// Compile AST
         CompilerForAST compilerForAST(source, virtualMachineForAST);
-        const bool compilerResult = compilerForAST();
+		const bool compilerResult{ compilerForAST() };
         
         if (compilerResult)
         {

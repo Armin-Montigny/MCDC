@@ -74,8 +74,8 @@ void VirtualMachineForAST::printTreeStandard(const std::string& source)
 	// Big AST may be automatically printed to a file
 	// Calculate the requested output stream. Pleass note: This can also be a T
 	// Meaning, output to file and cout at the same time is possible
-	const uint astSize = narrow_cast<uint>(ast.size());
-	const bool predicateForOutputToFile = (astSize > 200);
+	const uint astSize{ narrow_cast<uint>(ast.size()) };
+	const bool predicateForOutputToFile{ (astSize > 200) };
 	OutStreamSelection outStreamSelection(ProgramOption::pastc, predicateForOutputToFile);
 	std::ostream& os = outStreamSelection();
 
@@ -119,9 +119,9 @@ void VirtualMachineForAST::printTreeStandard(const std::string& source)
 void VirtualMachineForAST::printTree(std::ostream& os)
 {
 	// We will print a tree with a width of maximum 1000 chararcters (columns)
-	constexpr uint maxBufSize = 1000;
+	constexpr uint maxBufSize{ 1000 };
 	// This is the tab size, the distance between 2 levels of an AST
-	constexpr long tab = 11;
+	constexpr long tab{ 11 };
 
 	// Because we will c-style output, we need to set a 0 terminator at the end of the buffer, 
 	// after the last entry for a line has been printed
@@ -174,7 +174,7 @@ void VirtualMachineForAST::printTree(std::ostream& os)
 				const std::string strTemp{ oss.str() };
 				// Calculate the last column  of the output. Lokk for the greatest value in case that there will
 				// be 2 strings in the same line
-				const uint lastPosition = (tab* ast[i].level) + narrow_cast<uint>(strTemp.size()) + 1;
+				const uint lastPosition{ (tab * ast[i].level) + narrow_cast<uint>(strTemp.size()) + 1 };
 				// Prevent buffer overflow
 				if (lastPosition < maxBufSize)
 				{
@@ -201,7 +201,7 @@ void VirtualMachineForAST::printTree(std::ostream& os)
 
 void VirtualMachineForAST::calculateAstProperties()
 {
-	uint rootIndex = ast.rbegin()->ownID;
+	const uint rootIndex{ ast.rbegin()->ownID };
 	calculateAstPropertiesRecursive(rootIndex);
 }
 
@@ -260,13 +260,13 @@ void VirtualMachineForAST::calculateAstPropertiesRecursive(uint index)
 void VirtualMachineForAST::evaluateTree(uint inputValue)
 {
 	sourceValue = inputValue;
-	uint rootIndex = ast.rbegin()->ownID;
+	const uint rootIndex{ ast.rbegin()->ownID };
 	evaluateTreeRecursive(rootIndex);
 }
 void VirtualMachineForAST::evaluateTreeRecursive(uint index)
 {
-	AstNode& nodeAtIndex = ast[index];
-	const NumberOfChildren numberOfChildren = nodeAtIndex.numberOfChildren;
+	AstNode& nodeAtIndex{ ast[index] };
+	const NumberOfChildren numberOfChildren{ nodeAtIndex.numberOfChildren };
 
 	if (NumberOfChildren::zero == numberOfChildren)
 	{

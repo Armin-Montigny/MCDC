@@ -116,7 +116,7 @@ uint CodeGeneratorForVM::getNextAvailableRegister()
 	bool existingRegisterFound{ false }; // If we can reuse an existing register
 
 	// Go through all available registers
-	uint i = 0U;
+	uint i{ 0U };
 	while (i < availabeRegister.size())
 	{
 		// If the register is available for reuse
@@ -170,7 +170,7 @@ TokenWithAttribute CodeGeneratorForVM::generate(const Production &production, To
 	OpCodeLine opCodeLine;		// Resulting opCodeLine
 	TokenWithAttribute result;	// New token: non-terminal. Will be expression
 	
-	const Token token = production.operationIdentifier;
+	const Token token{ production.operationIdentifier };
 
 	// If it is an ID. So a variable in the boolean expression
 	if (Token::ID == token)
@@ -214,7 +214,7 @@ TokenWithAttribute CodeGeneratorForVM::generate(const Production &production, To
 	OpCodeLine opCodeLine; 		// Resulting opCodeLine
 	TokenWithAttribute result;	// New token: non-terminal. Will be expression
 	
-	const Token token = production.operationIdentifier;
+	const Token token{ production.operationIdentifier };
 	
 	// For NOT
 	if (Token::NOT == token)
@@ -274,7 +274,7 @@ TokenWithAttribute CodeGeneratorForVM::generate(const Production &production, To
 {
 	OpCodeLine opCodeLine;			// Resulting opCodeLine
 	TokenWithAttribute result;		// New token: non-terminal. Will be expression
-	const Token token = production.operationIdentifier;
+	const Token token{ production.operationIdentifier };
 	
 	// Closing bracket
 	if (Token::BCLOSE == token)
@@ -377,7 +377,7 @@ TokenWithAttribute CodeGeneratorForAST::generate(const Production &production, T
 	AstNode astElement;
 	TokenWithAttribute result;  // Resulting token that will be put on the parse stack
 	// Reference to production in the grammar. Reason, why we ar in this function
-	const Token token = production.operationIdentifier;
+	const Token token{ production.operationIdentifier };
 
 	if (Token::NOT == token)
 	{
@@ -432,7 +432,7 @@ TokenWithAttribute CodeGeneratorForAST::generate(const Production &production, T
 
 	TokenWithAttribute result;       // Resulting token that will be put on the parse stack
 	// Reference to production in the grammar. Reason, why we ar in this function
-	const Token token = production.operationIdentifier;
+	const Token token{ production.operationIdentifier };
 
 	if (Token::BCLOSE == token)
 	{

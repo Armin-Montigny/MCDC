@@ -222,7 +222,7 @@ sint Mcdc::compareScoreOf2TestValues(const TableCellVector& left, const TableCel
 void  Mcdc::initializeMcdcCoverageMethod()
 {
 	// Check, where the output goes to and provide the corresponding stream
-	const bool predicateForOutputToFile = (narrow_cast<uint>(testSet.size()) > 100);
+	const bool predicateForOutputToFile{ (narrow_cast<uint>(testSet.size()) > 100) };
 	OutStreamSelection outStreamSelectionMcdc(ProgramOption::pmtpc, predicateForOutputToFile);
 	std::ostream& os = outStreamSelectionMcdc();
 
@@ -233,7 +233,7 @@ void  Mcdc::initializeMcdcCoverageMethod()
 	// Only if, there are solutions
 	if (independencePairPerCondition.size() > 0)
 	{
-		uint linePrintCounter = 1U;
+		uint linePrintCounter{ 1U };
 		// Print something for every condition
 		for (const std::pair<const cchar, McdcIndependencePairSet>& mips : independencePairPerCondition)
 		{
@@ -275,11 +275,11 @@ void  Mcdc::initializeMcdcCoverageMethod()
 		for (const uint uiTest : testSetL.second)
 		{
 			// Find the test in the testSet
-			TestSet::iterator ti = testSet.find(uiTest);
+			TestSet::iterator ti{ testSet.find(uiTest) };
 			if (testSet.end() != ti)
 			{
 				// If found, mark this row, col combination as initial cover
-				const uint col = narrow_cast<uint>(std::distance(testSet.begin(),ti));
+				const uint col{ narrow_cast<uint>(std::distance(testSet.begin(),ti)) };
 				coverage.setCellAsCover(row, col);
 			}
 		}
@@ -306,7 +306,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(c
 {
 	// Test if a complete Test pair is part of the Coverage Result
 	// Resulting values that will be returned to function caller
-	bool found = false;					// We found a double match
+	bool found{ false };					// We found a double match
 	McdcIndependencePair mipResult{};		// And the corresponding test pair
 
 	// We will check for only in test pairs with the same MCDC type
@@ -321,13 +321,13 @@ std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(c
 			if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
 
 			// Get left and right of pair
-			const uint v1 = mip.independencePair.first;
-			const uint v2 = mip.independencePair.second;
+			const uint v1{ mip.independencePair.first };
+			const uint v2{ mip.independencePair.second	};
 			// And check if they are both in one column of the coverage table
-			CellVectorHeaderSet::iterator i1 = std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader& cvh) {return (v1 == cvh.index); });
+			CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
 			if (cvhs.end() != i1)
 			{	// This is an AND. Search 2 times and both results must be true
-				CellVectorHeaderSet::iterator i2 = std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader& cvh) {return (v2 == cvh.index); });
+				CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
 				if (cvhs.end() != i2)
 				{
 					// Yep, result is good
@@ -349,7 +349,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(c
 std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs)
 {
 	// Test if a complete Test pair is part of the Coverage Result
-	bool found = false;
+	bool found{ false };
 	McdcIndependencePair mipResult;
 
 	// Please note. The sequence  is impotant here.
@@ -364,11 +364,11 @@ std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(
 			if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
 
 			// Get left and right of pair
-			const uint v1 = mip.independencePair.first;
-			const uint v2 = mip.independencePair.second;
+			const uint v1{ mip.independencePair.first };
+			const uint v2{ mip.independencePair.second };
 
 			// This is an OR. Find either in the one or the other column
-			CellVectorHeaderSet::iterator i1 = std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader& cvh) {return (v1 == cvh.index); });
+			CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
 			if (cvhs.end() != i1)
 			{
 				found = true;		// Set return values
@@ -377,7 +377,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(
 			}
 			else
 			{
-				CellVectorHeaderSet::iterator i2 = std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader& cvh) {return (v2 == cvh.index); });
+				CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
 				if (cvhs.end() != i2)
 				{
 					found = true;		// Set return values
@@ -400,13 +400,13 @@ std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(
 // Some heuristic methods are used to come to a desired conclusion
 
 // Parameters symbolTable and mintermVector or only needed for output functions
-void Mcdc::generateTestSets(SymbolTable& symbolTable, MintermVector& mintermVector)
+void Mcdc::generateTestSets(const SymbolTable& symbolTable, const MintermVector& mintermVector)
 {
 	// Dependent on complexity, find correct output stream 
 	const ulong notDroppedElements{ coverage.countNotDroppedTableElements() };
-	const bool predicateForOutputToFile = (notDroppedElements > 30UL);
+	const bool predicateForOutputToFile{ (notDroppedElements > 30UL) };
 	OutStreamSelection outStreamSelection(ProgramOption::pmcsc, predicateForOutputToFile);
-	std::ostream& os = outStreamSelection();
+	std::ostream& os{ outStreamSelection() };
 
 
 	CoverageResult resultingCoverageSets;	// Result of coverage analysis. Contains on or more coverage sets
@@ -439,7 +439,7 @@ void Mcdc::generateTestSets(SymbolTable& symbolTable, MintermVector& mintermVect
 		os << "\n-------- For Coverage set " << std::setw(3) << (i + 1) << "    ----------------------------------------------------\n\n";
 
 		// Find a test pair for each varaible
-		bool found = false;
+		bool found{ false };
 
 		McdcIndependencePair resultingIndependencePair; // Found test pair for for this coverage set 
 		TestSet testSetForOneVariable;					// And the found test set for one condition for the coverage set under evaluation
@@ -543,13 +543,13 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 		for (const uint t : *allTestSets.begin())
 		{
 			os << std::setw(5) << t << ":  ";
-			SymbolType::size_type v = symbolTable.symbol.size() - 1;
+			SymbolType::size_type v{ symbolTable.symbol.size() - 1 };
 			for (const cchar c : symbolTable.symbol)
 			{
 				os << c << '=' << ((0U !=  (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			const uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t));
+			const uint count{ narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)) };
 			os << "  (" << count << ")\n";
 		}
 		os << "\n\n";
@@ -560,7 +560,7 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 		// We will find the minimum soze solution and if there are several eqaul sized minimums
 		// then we will take the first
 
-		uint min = UINT_MAX;
+		uint min{ UINT_MAX };
 		TestSet minTestSet;
 		// Look for the mimimum size, the test vector with the least values
 		for (const TestSet& ts : allTestSets)
@@ -586,13 +586,13 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 		for (const uint t : minTestSet)
 		{
 			os << std::setw(5) <<t << ":  ";
-			SymbolType::size_type v = symbolTable.symbol.size() - 1;
+			SymbolType::size_type v{ symbolTable.symbol.size() - 1 };
 			for (const cchar c : symbolTable.symbol)
 			{
 				os << c << '=' << ((0U != (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			const uint count = narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)); 
+			const uint count{ narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)) };
 			os << "  (" << count << ")\n";
 
 		}
@@ -606,7 +606,7 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 // In that case, we do not need to rund the set cover proble / unate covering solver
 bool Mcdc::isMax1IndependencePairPerCondition()
 {
-	bool thereIsExcatlyOneTestPairPerCondition = true;		// Assume positive result
+	bool thereIsExcatlyOneTestPairPerCondition{ true };		// Assume positive result
 	for (const std::pair<cchar, McdcIndependencePairSet>& ippc : independencePairPerCondition)
 	{
 		if (ippc.second.size() > 1)
@@ -630,27 +630,27 @@ bool Mcdc::isMax1IndependencePairPerCondition()
 void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 {
 
-	sint counter = 0;
+	sint counter{ 0 };
 
-	sint counterUniqueCauseMCDC = 0;
-	sint counterUniqueCauseMaskingMCDC = 0;
-	sint counterMaskingMCDC = 0;
-	std::set<uint> testSetUniqueCauseMCDC;
-	std::set<uint> testSetUniqueCauseMaskingMCDC;
-	std::set<uint> testSetMaskingMCDC;
+	sint counterUniqueCauseMCDC{ 0 };
+	sint counterUniqueCauseMaskingMCDC{ 0 };
+	sint counterMaskingMCDC{ 0 };
+	std::set<uint> testSetUniqueCauseMCDC{};
+	std::set<uint> testSetUniqueCauseMaskingMCDC{};
+	std::set<uint> testSetMaskingMCDC{};
 
 
 
 
 	// Number of different conditions in the given AST
-	const uint maxConditions = ast.maxConditionsInTree();
+	const uint maxConditions{ ast.maxConditionsInTree() };
 
 	{	// We want to close the file before calling the next function
 		
 		// Determine the desired output stream
-		const bool predicateForOutputToFile = (maxConditions > 3);
+		const bool predicateForOutputToFile{ (maxConditions > 3) };
 		OutStreamSelection outStreamSelection(ProgramOption::pmastc, predicateForOutputToFile);
-		std::ostream& osMcdc = outStreamSelection();
+		std::ostream& osMcdc{ outStreamSelection() };
 		osMcdc << "\n\n\n\n-------------------------------------------------- Searching for MCDC Test pairs \n\n\n";
 
 
@@ -660,9 +660,9 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 		VirtualMachineForAST astInfluenceSet{ ast };
 
 		// Calculate maximum number of possible tests. We will compare everything with the other 
-		const uint maxLoop = static_cast<uint>(1U << static_cast<uint>(maxConditions));
+		const uint maxLoop{ static_cast<uint>(1U << static_cast<uint>(maxConditions)) };
 		// Number of nodes in the AST	
-		const uint astSize = narrow_cast<uint>(astInfluenceSet.ast.size());
+		const uint astSize{ narrow_cast<uint>(astInfluenceSet.ast.size()) };
 
 		// We will calculate results for the AST for all possible test values
 		std::vector<VirtualMachineForAST> astPreEvaluated;
@@ -837,7 +837,7 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 std::pair<McdcType, cchar> Mcdc::getMcdcType(AST& astInfluencingTree)
 {
 	// For function result
-	McdcType resultingMcdcType = McdcType::NONE;
+	McdcType resultingMcdcType{ McdcType::NONE };
 	cchar lastInfluencingSymbol{ ' ' };
 	constexpr uint MaxIndexForTerminal{ static_cast<uint>('z') + 1U };
 
@@ -851,20 +851,20 @@ std::pair<McdcType, cchar> Mcdc::getMcdcType(AST& astInfluencingTree)
 	uint influencingSymbolCounter{ 0U };
 
 	bool oneInfluencingPathFound{ false }; // Check if at least one influencing path is available
-	const uint astSize = narrow_cast<uint> (astInfluencingTree.size());
+	const uint astSize{ narrow_cast<uint> (astInfluencingTree.size()) };
 
 	// Check the complete influencing tree
 	for (uint i = 0; i < astSize; ++i)
 	{
 		// Reference to current node
-		const AstNode& astNode = astInfluencingTree[i];
+		const AstNode& astNode{ astInfluencingTree[i] };
 
 		// Is this a leaf, meaning do we have a condition here
 		// A condition would be the staring point for a path analysis
 		if ((NumberOfChildren::zero == astNode.numberOfChildren) && astNode.value)
 		{
 			// Yes, Leaf. Read the condition. Only lowercase is important for counting
-			cchar inputTerminalSymbol = astNode.tokenWithAttribute.inputSymbolLowerCase;
+			cchar inputTerminalSymbol{ astNode.tokenWithAttribute.inputSymbolLowerCase };
 
 			// Count the number of that condition that have value true. 
 			// That means the variable has been changed from on test to the other
@@ -875,8 +875,8 @@ std::pair<McdcType, cchar> Mcdc::getMcdcType(AST& astInfluencingTree)
 
 			// Check if the condition is influencing
 			// That means all true in a path up to the root node
-			uint indexNodeUnderEvaluation = i;
-			bool pathIsTrue = true;
+			uint indexNodeUnderEvaluation{ i };
+			bool pathIsTrue{ true };
 			do
 			{
 				// All values along the path must be true. If not, we can terminate this loo´p

@@ -76,7 +76,7 @@
 bool Parser::parse()
 {
 
-	bool result = true; // Result of the parsing process. True is OK
+	bool result{ true }; // Result of the parsing process. True is OK
 
 	// Reset the scanner. Start the scanning the source string from the beginning
 	scanner.reset();
@@ -86,7 +86,7 @@ bool Parser::parse()
 	// Interface to scanner
 	TokenWithAttribute tokenWithAttribute;
 
-	bool doParse = true;
+	bool doParse{ true };
 	while (doParse)
 	{
 		// Call scanner/Lexer and get the next token
@@ -108,7 +108,7 @@ bool Parser::parse()
 
 			// Try to match  the parse stack top with a handle in the grammar
 			// After a match, reduce and try to match again
-			bool doMatchAndReduce = true;
+			bool doMatchAndReduce{ true };
 			while (doMatchAndReduce)
 			{
 				// ..........................................................	-- > Match
@@ -172,21 +172,21 @@ std::pair<bool, uint>  Parser::match()
 		// We can only compare a handle to stack elements, if there are enough elements on the stack
 		// Get the minimum nneded number of stack elements from the production
 
-		const uint lengthOfHandleIncludingLookahead = (production.hasLookAhead ? 1U : 0U) + production.numberOfTokensInHandle;
+		const uint lengthOfHandleIncludingLookahead{ (production.hasLookAhead ? 1U : 0U) + production.numberOfTokensInHandle };
 		//std::cout << "Match  top Of Stack: " << topOfStack << "    Length of Handle: " << lengthOfHandleIncludingLookahead << "    Production : " << production.id  << '\n';		
 
 		if (static_cast<uint>(sizeOfStack) >= lengthOfHandleIncludingLookahead)
 		{
 			//std::cout << "SIZE OK " << topOfStack << "    Length of Handle: " << lengthOfHandleIncludingLookahead << "    Production : " << production.id  << '\n';		
 			// index of stack Element to compare
-			sint stackElementToCompare = (topOfStack);
+			sint stackElementToCompare{ topOfStack };
 			// We check for good lookahead
 			// If there is no lookahead, then we still assume a OK comparison
 			// If there is a look ahead, then the initial assumption is that lookahead has no match
-			bool lookAheadOk = !production.hasLookAhead;
+			bool lookAheadOk{ !production.hasLookAhead };
 			// OK, we can start to compare. 
 			// We will first concentrate on the lookahead symbols and the to top stack element
-			Token stackTokenToCompare = parseStack[static_cast<uint>(stackElementToCompare)].token;
+			Token stackTokenToCompare{ parseStack[static_cast<uint>(stackElementToCompare)].token };
 
 			// If there is a look ahead at all
 			if (production.hasLookAhead)
@@ -210,14 +210,14 @@ std::pair<bool, uint>  Parser::match()
 				matchFound = true;
 				// Then compare the stack with the handle
 				// Iterate over all elements in the handle
-				uint indexInHandle = 0;
-				const uint maxTokenInHandle = production.numberOfTokensInHandle;
+				uint indexInHandle{ 0 };
+				const uint maxTokenInHandle{ production.numberOfTokensInHandle };
 
 				do
 				{
 					// Token on the stack
 					stackTokenToCompare = parseStack[static_cast<uint>(stackElementToCompare)].token;
-					const Token	handleTokenToCompare = production.handle[indexInHandle];
+					const Token	handleTokenToCompare{ production.handle[indexInHandle] };
 
 					// We want to do a complete match, if one does not fit, then result is false
 					matchFound = matchFound && (stackTokenToCompare == handleTokenToCompare);
@@ -246,10 +246,10 @@ std::pair<bool, uint>  Parser::match()
 void Parser::reduce(uint positionOfProduction)
 {
 	TokenWithAttribute newTokenWithAttribute;	// Result of codegenerator. New stack element
-	uint stackPointer = narrow_cast<uint>(parseStack.size()) - 1;
+	uint stackPointer = { narrow_cast<uint>(parseStack.size()) - 1 };
 
 	// Get reference to production
-	const Production& production = grammar[positionOfProduction];
+	const Production& production{ grammar[positionOfProduction] };
 
 	if (production.hasLookAhead)
 	{

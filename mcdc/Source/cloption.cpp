@@ -378,7 +378,7 @@ OutStreamSelection::OutStreamSelection(uint optionFirstIndexInGroupU, const bool
 	selection = 0 ;
 
 	// This is only a acst to unsigned long long
-	const ull optionFirstIndexInGroup = optionFirstIndexInGroupU;
+	const ull optionFirstIndexInGroup{ optionFirstIndexInGroupU };
 
 	if (programOption.option[optionFirstIndexInGroup].optionSelected)
 	{
@@ -508,8 +508,7 @@ ProgramOption programOption;
 // Checks, if a string given in the command line is something that we are expecting
 bool ProgramOption::checkIfStringIsAValidOption(const std::string& optString)
 {
-	bool result = (option.end() != std::find_if(option.begin(), option.end(), [optString](const CommandLineOption& go) noexcept {return (optString == go.optionIdentificationString); }));
-	return result;
+	return (option.end() != std::find_if(option.begin(), option.end(), [optString](const CommandLineOption& go) noexcept {return (optString == go.optionIdentificationString); }));
 }
 
 
@@ -618,7 +617,7 @@ void ProgramOption::readOptions(const sint argc, const cchar* const argv[])
 		// Copy command line option to a string
 		std::string optionWord(argv[i]);
 		// Check, if the given option is in the list of acceptable options
-		const bool validOption = checkIfStringIsAValidOption(optionWord);
+		const bool validOption{ checkIfStringIsAValidOption(optionWord) };
 		// Command line parameter 0 ist the name of your program, including the path
 		if ((i > 0) && !validOption)
 		{
@@ -738,7 +737,7 @@ void ProgramOption::readOptionsFromFile(std::ifstream& infile, uint& level)
 				// If we did not read a new string this time, then definitly do it next time. 
 				doRead = true;
 			}
-			const bool validOption = checkIfStringIsAValidOption(optionWord);
+			const bool validOption{ checkIfStringIsAValidOption(optionWord) };
 			if (!validOption)
 			{
 				// Handle comments. Ignore everything # and follwing 
@@ -842,7 +841,7 @@ void ProgramOption::evaluateCommandLine()
 	std::string optionIdString;
 	ComandLineVectorIter clvi;
 
-	ull indexBeginOutputOptions = 0;
+	ull indexBeginOutputOptions{ 0ULL };
 	// Go through all possible defined options
 	while (indexBeginOutputOptions < pmcsfautoa)
 	{
@@ -950,7 +949,7 @@ void ProgramOption::evaluateCommandLine()
 		option[fa].optionSelected = false;	// File append mode is false
 	}
 
-	const bool fileOverwriteMode = option[fo].optionSelected;
+	const bool fileOverwriteMode{ option[fo].optionSelected };
 
 
 
@@ -1124,7 +1123,7 @@ void ProgramOption::checkPrioritiesWithinGroups(ull index)
 void ProgramOption::setOverwriteAppendFlag()
 {
 	// Initially we expect overwrite mode
-	bool appendFlag = false;
+	bool appendFlag{ false };
 	// If the append flag is set
 	if (option[fa].optionSelected)
 	{
@@ -1132,7 +1131,7 @@ void ProgramOption::setOverwriteAppendFlag()
 	}
 
 	// Go through all output flags and set the global append mode flag
-	ull indexBeginOutputOptions = pallc;
+	ull indexBeginOutputOptions{ pallc };
 	while (indexBeginOutputOptions < pmcsfautoa)
 	{
 		for (ull i = 0; i < 5; ++i)
@@ -1148,7 +1147,7 @@ void ProgramOption::setOverwriteAppendFlag()
 	if (option[fafwsfn].optionSelected)
 	{
 		// Go through all filenames and check if we have several identical filenames
-		ull index1BeginOutputOptions = pallc;
+		ull index1BeginOutputOptions{ pallc };
 		while (index1BeginOutputOptions < (pmcsfautoa))
 		{
 			// Iterate over all elements in one group
@@ -1158,11 +1157,11 @@ void ProgramOption::setOverwriteAppendFlag()
 				// If this specif option is selected
 				if (option[index1BeginOutputOptions + i].optionSelected)
 				{
-					std::string filenameFirst = option[index1BeginOutputOptions + i].optionParameterString;
+					std::string filenameFirst{ option[index1BeginOutputOptions + i].optionParameterString };
 					if (!filenameFirst.empty() )
 					{
 						// Then compare this with the element from the following groups
-						ull index2BeginOutputOptions = index1BeginOutputOptions + i + 5;
+						ull index2BeginOutputOptions{ index1BeginOutputOptions + i + 5 };
 						while (index2BeginOutputOptions < pmcsfautoa)
 						{
 							// If the option in the other group is also selected

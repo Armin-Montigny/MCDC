@@ -174,7 +174,7 @@ public:
 	void findMcdcIndependencePairs(VirtualMachineForAST& ast);
 
 	// Select the test set as a result of the brute force search
-	void generateTestSets(SymbolTable& symbolTable, MintermVector& mv);
+	void generateTestSets(const SymbolTable& symbolTable, const MintermVector& mv);
 
 protected:
 
