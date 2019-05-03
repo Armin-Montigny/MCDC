@@ -271,11 +271,13 @@ calculation durations.
 Program Options
 ===============
 
+See below an example of an options file.
+
 The "\#" character can be used for inserting comments. Everything
 including and after \# until end of line will be ignored.
 ````
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 1. General Options
 # -s "boolean expression"                           # Define boolean expression to evaluate
 #-sa                                                # Ask for boolean expression in program
@@ -283,7 +285,7 @@ including and after \# until end of line will be ignored.
 # -bse                                              # Use boolean short cut evaluation in abstract syntax trees
 # -opt "filename"                                   # Use file "filename" to read options
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 2. File Handling related Options
 -fd \"R:\"                                          # Base directory, where all resulting files will bewritten to. Default is current directory
 # -fp "prefix"                                      # Prefix which will be prepended before all filenames. Default is no prefix
@@ -291,7 +293,7 @@ including and after \# until end of line will be ignored.
 # -fa                                               # Append new files to existing data. Will be overwritten by -fo
 -fafwsfn                                            # Append files with same given filenames. If for the below files a double name is given, then the data will go into one file. in the case of -fo, the initial file is overwritten.
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3. Output controlling Options
 # -paast                                            # Print all abstract syntax trees in MCDC test. Not only those with positive MCDC outcome
 # -ppst                                             # Print parse stack to console
@@ -299,7 +301,7 @@ including and after \# until end of line will be ignored.
 # -nomcdc                                           # Do Not calculate MCDC test vectors
 # -dnpast                                           # Do not print ASTs while searching for test pairs
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.1 Definition for all other output Options
 # -pallc                                            # Write all Data to console
 -pallf "all.txt"                                    # Write all Data to file "filename"
@@ -307,7 +309,7 @@ including and after \# until end of line will be ignored.
 # -pallfauto "filename"                             # Automatically write big data with lots of lines to file "filename", the rest to console
 # -pallfautoa                                       # Automatically write big data with lots of lines to file with automatic created filename, the rest to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.2 Object code dump
 # -pcoc                                             # Print compiled object code to console
 # -pcof "filename"                                  # Print compiled object code to file "filename"
@@ -315,7 +317,7 @@ including and after \# until end of line will be ignored.
 # -pcofauto "filename"                              # Automatically write big compiled object code to file "filename", write small data to console
 # -pcofautoa                                        # Automatically write big compiled object code to file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.3 Truth table output
 # -pttc                                             # Print truth table to console
 # -pttf "filename"                                  # Print truth table to file "filename"
@@ -323,7 +325,7 @@ including and after \# until end of line will be ignored.
 # -pttfauto "filename"                              # Automatically write big truth table to file "filename", write small data to console
 # -pttfautoa                                        # Automatically write big truth table to file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.4 Show Quine Mccluskey reduction table
 # -pqmtc                                            # Print Quine Mcluskey Reduction Tables to console
 # -pqmtf "filename"                                 # Print Quine Mcluskey Reduction Tables to file "filename"
@@ -331,7 +333,7 @@ including and after \# until end of line will be ignored.
 # -pqmtfauto "filename"                             # Automatically write big Quine Mcluskey Reduction Tables to file "filename", write small data to console
 # -pqmtfautoa                                       # Automatically write big Quine Mcluskey Reduction Tables to file with automatic created filename, write samll data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.5 Show Prime Impicant reduction table
 # -ppirtc                                           # Print Prime Implicant Reduction Table to console
 # -ppirtf "filename"                                # Print Prime Implicant Reduction Table to file "filename"
@@ -339,7 +341,7 @@ including and after \# until end of line will be ignored.
 # -ppirtfauto "filename"                            # Automatically write big Prime Implicant Reduction Table to file "filename", write small data to console
 # -ppirtfautoa                                      # Automatically write big Prime Implicant Reduction Table to file file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.6 Show Abstract Syntax Tree
 # -pastc                                            # Print Abtract Syntax Tree to console
 # -pastf "filename"                                 # Print Abtract Syntax Tree to file "filename"
@@ -347,7 +349,7 @@ including and after \# until end of line will be ignored.
 # -pastfauto "filename"                             # Automatically write big Abtract Syntax Tree to file "filename", write small data to console
 # -pastfautoa                                       # Automatically write big Abtract Syntax Tree to file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.7 Show Abstract Syntax Tree for MC/DC relevant values
 # -pmastc                                           # Print only MCDC relevant abtract syntac trees during brute force evaluation to console
 # -pmastf "filename"                                # Print only MCDC relevant abtract syntac trees during brute force evaluation to file "filename"
@@ -355,7 +357,7 @@ including and after \# until end of line will be ignored.
 # -pmastfauto "filename"                            # Automatically write big data for all MCDC relevant abtract syntac trees to file "filename", write small data to console
 # -pmastfautoa                                      # Automatically write big data for all MCDC relevant abtract syntac trees to file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.8 Show Resulting MC/DC test pairs
 # -pmtpc                                             # Print all MC/DC testpairs to console
 # -pmtpf "filename"                                  # Print all MC/DC testpairs to file "filename"
@@ -363,7 +365,7 @@ including and after \# until end of line will be ignored.
 # -pmtpfauto "filename"                              # Automatically write big data for all MC/DC testpairs to file "filename", write small data to console
 # -pmtpfautoa                                        # Automatically write big data for all MC/DC testpairs to file with automatic created filename, write small data to console. Default
 #
-------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------
 # 3.9 Show Resulting test coverage sets
 # -pmcsc                                            # Print all MC/DC coverage sets to console
 # -pmcsf "filename"                                 # Print all MC/DC coverage sets to file filename
@@ -377,6 +379,12 @@ Documentation of Software
 
 The source code contains detailed explanations and many comments, to
 give a detailed understanding.
+
+The Software has been build with Microsoft Visual Studio 2019 community edition. This can be downloaded and used for free for non commercial usage. The compiler options are stored in the project files, which are also attached.
+
+The language is C++ 17.
+
+There is also a version available that has been tested on a Raspberry PI 3B+. Compiled with g++ 8.x . Also C++ 17.
 
 Functional Parts and structure
 ------------------------------
