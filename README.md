@@ -72,34 +72,26 @@ on the resulting decision. Example for boolean expression "a+b" and test
 vector 0,1, so for condition b:
 
 Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
+````
+    ------------------------------------------------------------------------------
+    AST for value: 0
+    
+    0 ID a (0)
+    1            OR 0,2 (0)
+    2 ID b (0)
+    ------------------------------------------------------------------------------
+    AST for value: 1
 
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for value: 0
+    0 ID a (0)
+    1             OR 0,2 (1)
+    2 ID b (1)
 
-0 ID a (0)
-
-1            OR 0,2 (0)
-
-2 ID b (0)
-
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for value: 1
-
-0 ID a (0)
-
-1             OR 0,2 (1)
-
-2 ID b (1)
-
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for influencing condition check
-
-0 ID a (0)
-
-1             OR 0,2 (1)
-
-2 ID b (1)
-
+    ------------------------------------------------------------------------------
+    AST for influencing condition check
+    0 ID a (0)
+    1             OR 0,2 (1)
+    2 ID b (1)
+````
 Please note: The "AST for influencing condition check" is a tree XOR of
 the previous 2 ASTs. The Or operation result here is not the result of
 "a+b", but an XOR of the OR value in the first AST and OR value of the
@@ -115,76 +107,48 @@ Example for Masking MC/DC for \"a+b\^c!(d+e)\" for test vectors 0, 15
 (meaning 4 variables changed), but still it is MC/DC for condition b.
 All other conditions are masked by boolean logic:
 
-Masking MCDC Test pair for condition: b Test Pair: 0 15
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for value: 0
+````
+    Masking MCDC Test pair for condition: b Test Pair: 0 15
+    ------------------------------------------------------------------------------
+    AST for value: 0
+    0         ID a (0)
+    1
+    2 OR 0,4 (0)       ID b (0)
+    3
+    4         XOR 2,6 (0)      ID c (0)
+    5
+    6                  AND 4,8 (0)              ID d (0)
+    7                                  OR 6,8 (0)
+    8                          NOT 7 (1)        ID e (0)
+    9
 
-0                                  ID a (0)
+    ------------------------------------------------------------------------------
+    AST for value: 15
 
-1
+    0          ID a (0)
+    1
+    2 OR 0,4 (1)           ID b (1)
+    3
+    4          XOR 2,6 (1)         ID c (1)
+    5
+    6                     AND 4,8 (0)                  ID d (1)
+    7                                        OR 6,8 (1)
+    8                               NOT 7 (0)          ID e (1)
+    9
 
-2 OR 0,4 (0)                       ID b (0)
-
-3
-
-4 XOR 2,6 (0) ID c (0)
-
-5
-
-6 AND 4,8 (0) ID d (0)
-
-7 OR 6,8 (0)
-
-8 NOT 7 (1) ID e (0)
-
-9
-
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for value: 15
-
-0 ID a (0)
-
-1
-
-2 OR 0,4 (1) ID b (1)
-
-3
-
-4 XOR 2,6 (1) ID c (1)
-
-5
-
-6 AND 4,8 (0) ID d (1)
-
-7 OR 6,8 (1)
-
-8 NOT 7 (0) ID e (1)
-
-9
-
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-AST for influencing condition check
-
-0 ID a (0)
-
-1
-
-2 OR 0,4 (1) ID b (1)
-
-3
-
-4 XOR 2,6 (1) ID c (1)
-
-5
-
-6 AND 4,8 (0) ID d (1)
-
-7 OR 6,8 (1)
-
-8 NOT 7 (1) ID e (1)
-
-9
-
+    ------------------------------------------------------------------------------
+    AST for influencing condition check
+    0          ID a (0)
+    1
+    2 OR 0,4 (1)         ID b (1)
+    3
+    4          XOR 2,6 (1)         ID c (1)
+    5
+    6                    AND 4,8 (0)                 ID d (1)
+    7                                      OR 6,8 (1)
+    8                              NOT 7 (1)         ID e (1)
+    9
+````
 Numbers following operations are line numbers.
 
 Please note: Although 4 conditions changed between AST 0 and AST 15,
@@ -309,228 +273,104 @@ Program Options
 
 The "\#" character can be used for inserting comments. Everything
 including and after \# until end of line will be ignored.
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 1. General Options
-
-\# -s \"boolean expression\" \# Define boolean expression to evaluate
-
-\#-sa \# Ask for boolean expression in program
-
--umdnf \# Use minimum DNF resulting from QuineMcLuskey Reduction for
-MCDC calculation
-
-\# -bse \# Use boolean short cut evaluation in abstract syntax trees
-
-\# -opt \"filename\" \# Use file \"filename\" to read options
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 2. File Handling related Options
-
--fd \"R:\\\" \# Base directory, where all resulting files will be
-written to. Default is current directory
-
-\# -fp \"prefix\" \# Prefix which will be prepended before all
-filenames. Default is no prefix
-
--fo \# Overwrite all files with new data. Default, priority over -fa
-
-\# -fa \# Append new files to existing data. Will be overwritten by -fo
-
--fafwsfn \# Append files with same given filenames. If for the below
-files a double name is given, then the data will go into one file. in
-the case of -fo, the initial file is overwritten.
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3. Output controlling Options
-
-\# -paast \# Print all abstract syntax trees in MCDC test. Not only
-those with positive MCDC outcome
-
-\# -ppst \# Print parse stack to console
-
-\# -sfqmt \# Show full Quine&McCluskey Reduction Table (will be a bit
-slower)
-
-\# -nomcdc \# Do Not calculate MCDC test vectors
-
-\# -dnpast \# Do not print ASTs while searching for test pairs
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.1 Definition for all other output Options
-
-\# -pallc \# Write all Data to console
-
--pallf \"all.txt\" \# Write all Data to file \"filename\"
-
-\# -palla \# Write all Data to file with automatic created filename
-
-\# -pallfauto \"filename\" \# Automatically write big data with lots of
-lines to file \"filename\", the rest to console
-
-\# -pallfautoa \# Automatically write big data with lots of lines to
-file with automatic created filename, the rest to console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.2 Object code dump
-
-\# -pcoc \# Print compiled object code to console
-
-\# -pcof \"filename\" \# Print compiled object code to file \"filename\"
-
-\# -pcofa \# Print compiled object code to file with automatic created
-filename
-
-\# -pcofauto \"filename\" \# Automatically write big compiled object
-code to file \"filename\", write small data to console
-
-\# -pcofautoa \# Automatically write big compiled object code to file
-with automatic created filename, write small data to console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.3 Truth table output
-
-\# -pttc \# Print truth table to console
-
-\# -pttf \"filename\" \# Print truth table to file \"filename\"
-
-\# -pttfa \# Print truth table to file with automatic created filename
-
-\# -pttfauto \"filename\" \# Automatically write big truth table to file
-\"filename\", write small data to console
-
-\# -pttfautoa \# Automatically write big truth table to file with
-automatic created filename, write small data to console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.4 Show Quine Mccluskey reduction table
-
-\# -pqmtc \# Print Quine Mcluskey Reduction Tables to console
-
-\# -pqmtf \"filename\" \# Print Quine Mcluskey Reduction Tables to file
-\"filename\"
-
-\# -pqmtfa \# Print Quine Mcluskey Reduction Tables to file with
-automatic created filename
-
-\# -pqmtfauto \"filename\" \# Automatically write big Quine Mcluskey
-Reduction Tables to file \"filename\", write samll data to console
-
-\# -pqmtfautoa \# Automatically write big Quine Mcluskey Reduction
-Tables to file with automatic created filename, write samll data to
-console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.5 Show Prime Impicant reduction table
-
-\# -ppirtc \# Print Prime Implicant Reduction Table to console
-
-\# -ppirtf \"filename\" \# Print Prime Implicant Reduction Table to file
-\"filename\"
-
-\# -ppirtfa \# Print Prime Implicant Reduction Table to file with
-automatic created filename
-
-\# -ppirtfauto \"filename\" \# Automatically write big Prime Implicant
-Reduction Table to file \"filename\", write small data to console
-
-\# -ppirtfautoa \# Automatically write big Prime Implicant Reduction
-Table to file file with automatic created filename, write small data to
-console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.6 Show Abstract Syntax Tree
-
-\# -pastc \# Print Abtract Syntax Tree to console
-
-\# -pastf \"filename\" \# Print Abtract Syntax Tree to file \"filename\"
-
-\# -pasta \# Print Abtract Syntax Tree to file with automatic created
-filename
-
-\# -pastfauto \"filename\" \# Automatically write big Abtract Syntax
-Tree to file \"filename\", write small data to console
-
-\# -pastfautoa \# Automatically write big Abtract Syntax Tree to file
-with automatic created filename, write small data to console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.7 Show Abstract Syntax Tree for MC/DC relevant values
-
-\# -pmastc \# Print only MCDC relevant abtract syntac trees during brute
-force evaluation to console
-
-\# -pmastf \"filename\" \# Print only MCDC relevant abtract syntac trees
-during brute force evaluation to file \"filename\"
-
-\# -pmasta \# Print only MCDC relevant abtract syntac trees during brute
-force evaluation to file with automatic created filename
-
-\# -pmastfauto \"filename\" \# Automatically write big data for all MCDC
-relevant abtract syntac trees to file \"filename\", write small data to
-console
-
-\# -pmastfautoa \# Automatically write big data for all MCDC relevant
-abtract syntac trees to file with automatic created filename, write
-small data to console. Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.8 Show Resulting MC/DC test pairs
-
-\# -pmtpc \# Print all MC/DC testpairs to console
-
-\# -pmtpf \"filename\" \# Print all MC/DC testpairs to file \"filename\"
-
-\# -pmtpa \# Print all MC/DC testpairs to file with automatic created
-filename
-
-\# -pmtpfauto \"filename\" \# Automatically write big data for all MC/DC
-testpairs to file \"filename\", write small data to console
-
-\# -pmtpfautoa \# Automatically write big data for all MC/DC testpairs
-to file with automatic created filename, write small data to console.
-Default
-
-\#
-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
-
-\# 3.9 Show Resulting test coverage sets
-
-\# -pmcsc \# Print all MC/DC coverage sets to console
-
-\# -pmcsf \"filename\" \# Print all MC/DC coverage sets to file filename
-
-\# -pmcsa \# Print all MC/DC coverage sets to console file with
-automatic created filename
-
-\# -pmcsfauto \"filename\" \# Automatically write big data for all MC/DC
-coverage sets to file \"filename\", write small data to console
-
-\# -pmcsfautoa \# Automatically write big data for all MC/DC coverage
-sets to file with automatic created filename, write small data to
-console. Default
+````
+#
+------------------------------------------------------------------------------------------------------------
+# 1. General Options
+# -s "boolean expression"                           # Define boolean expression to evaluate
+#-sa                                                # Ask for boolean expression in program
+-umdnf                                              # Use minimum DNF resulting from QuineMcLuskey Reduction for MCDC calculation
+# -bse                                              # Use boolean short cut evaluation in abstract syntax trees
+# -opt "filename"                                   # Use file "filename" to read options
+#
+------------------------------------------------------------------------------------------------------------
+# 2. File Handling related Options
+-fd \"R:\"                                          # Base directory, where all resulting files will bewritten to. Default is current directory
+# -fp "prefix"                                      # Prefix which will be prepended before all filenames. Default is no prefix
+-fo                                                 # Overwrite all files with new data. Default, priority over -fa
+# -fa                                               # Append new files to existing data. Will be overwritten by -fo
+-fafwsfn                                            # Append files with same given filenames. If for the below files a double name is given, then the data will go into one file. in the case of -fo, the initial file is overwritten.
+#
+------------------------------------------------------------------------------------------------------------
+# 3. Output controlling Options
+# -paast                                            # Print all abstract syntax trees in MCDC test. Not only those with positive MCDC outcome
+# -ppst                                             # Print parse stack to console
+# -sfqmt                                            # Show full Quine&McCluskey Reduction Table (will be a bit slower)
+# -nomcdc                                           # Do Not calculate MCDC test vectors
+# -dnpast                                           # Do not print ASTs while searching for test pairs
+#
+------------------------------------------------------------------------------------------------------------
+# 3.1 Definition for all other output Options
+# -pallc                                            # Write all Data to console
+-pallf "all.txt"                                    # Write all Data to file "filename"
+# -palla                                            # Write all Data to file with automatic created filename
+# -pallfauto "filename"                             # Automatically write big data with lots of lines to file "filename", the rest to console
+# -pallfautoa                                       # Automatically write big data with lots of lines to file with automatic created filename, the rest to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.2 Object code dump
+# -pcoc                                             # Print compiled object code to console
+# -pcof "filename"                                  # Print compiled object code to file "filename"
+# -pcofa                                            # Print compiled object code to file with automatic created filename
+# -pcofauto "filename"                              # Automatically write big compiled object code to file "filename", write small data to console
+# -pcofautoa                                        # Automatically write big compiled object code to file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.3 Truth table output
+# -pttc                                             # Print truth table to console
+# -pttf "filename"                                  # Print truth table to file "filename"
+# -pttfa                                            # Print truth table to file with automatic created filename
+# -pttfauto "filename"                              # Automatically write big truth table to file "filename", write small data to console
+# -pttfautoa                                        # Automatically write big truth table to file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.4 Show Quine Mccluskey reduction table
+# -pqmtc                                            # Print Quine Mcluskey Reduction Tables to console
+# -pqmtf "filename"                                 # Print Quine Mcluskey Reduction Tables to file "filename"
+# -pqmtfa                                           # Print Quine Mcluskey Reduction Tables to file with automatic created filename
+# -pqmtfauto "filename"                             # Automatically write big Quine Mcluskey Reduction Tables to file "filename", write small data to console
+# -pqmtfautoa                                       # Automatically write big Quine Mcluskey Reduction Tables to file with automatic created filename, write samll data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.5 Show Prime Impicant reduction table
+# -ppirtc                                           # Print Prime Implicant Reduction Table to console
+# -ppirtf "filename"                                # Print Prime Implicant Reduction Table to file "filename"
+# -ppirtfa                                          # Print Prime Implicant Reduction Table to file with automatic created filename
+# -ppirtfauto "filename"                            # Automatically write big Prime Implicant Reduction Table to file "filename", write small data to console
+# -ppirtfautoa                                      # Automatically write big Prime Implicant Reduction Table to file file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.6 Show Abstract Syntax Tree
+# -pastc                                            # Print Abtract Syntax Tree to console
+# -pastf "filename"                                 # Print Abtract Syntax Tree to file "filename"
+# -pasta                                            # Print Abtract Syntax Tree to file with automatic created filename
+# -pastfauto "filename"                             # Automatically write big Abtract Syntax Tree to file "filename", write small data to console
+# -pastfautoa                                       # Automatically write big Abtract Syntax Tree to file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.7 Show Abstract Syntax Tree for MC/DC relevant values
+# -pmastc                                           # Print only MCDC relevant abtract syntac trees during brute force evaluation to console
+# -pmastf "filename"                                # Print only MCDC relevant abtract syntac trees during brute force evaluation to file "filename"
+# -pmasta                                           # Print only MCDC relevant abtract syntac trees during brute force evaluation to file with automatic created filename
+# -pmastfauto "filename"                            # Automatically write big data for all MCDC relevant abtract syntac trees to file "filename", write small data to console
+# -pmastfautoa                                      # Automatically write big data for all MCDC relevant abtract syntac trees to file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.8 Show Resulting MC/DC test pairs
+# -pmtpc                                             # Print all MC/DC testpairs to console
+# -pmtpf "filename"                                  # Print all MC/DC testpairs to file "filename"
+# -pmtpa                                             # Print all MC/DC testpairs to file with automatic created filename
+# -pmtpfauto "filename"                              # Automatically write big data for all MC/DC testpairs to file "filename", write small data to console
+# -pmtpfautoa                                        # Automatically write big data for all MC/DC testpairs to file with automatic created filename, write small data to console. Default
+#
+------------------------------------------------------------------------------------------------------------
+# 3.9 Show Resulting test coverage sets
+# -pmcsc                                            # Print all MC/DC coverage sets to console
+# -pmcsf "filename"                                 # Print all MC/DC coverage sets to file filename
+# -pmcsa                                            # Print all MC/DC coverage sets to console file with automatic created filename
+# -pmcsfauto "filename"                             # Automatically write big data for all MC/DC coverage sets to file "filename", write small data to console
+# -pmcsfautoa                                       # Automatically write big data for all MC/DC coverage sets to file with automatic created filename, write small data to console. Default
+````
 
 Documentation of Software
 =========================
