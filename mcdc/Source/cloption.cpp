@@ -378,7 +378,7 @@ OutStreamSelection::OutStreamSelection(uint optionFirstIndexInGroupU, const bool
 	selection = 0 ;
 
 	// This is only a acst to unsigned long long
-	const ull optionFirstIndexInGroup{ optionFirstIndexInGroupU };
+	const uint optionFirstIndexInGroup{ optionFirstIndexInGroupU };
 
 	if (programOption.option[optionFirstIndexInGroup].optionSelected)
 	{
@@ -841,12 +841,12 @@ void ProgramOption::evaluateCommandLine()
 	std::string optionIdString;
 	ComandLineVectorIter clvi;
 
-	ull indexBeginOutputOptions{ 0ULL };
+	uint indexBeginOutputOptions{ 0ULL };
 	// Go through all possible defined options
 	while (indexBeginOutputOptions < pmcsfautoa)
 	{
 		// All options are organized in groups of 5 elements
-		for (ull i = 0; i < 5ULL; ++i)
+		for (uint i = 0; i < 5ULL; ++i)
 		{
 			// First Check, if a option is present and if so, copy data
 			optionIdString = option[indexBeginOutputOptions + i].optionIdentificationString;
@@ -977,7 +977,7 @@ void ProgramOption::evaluateCommandLine()
 	// Maybe overwritte later be section specific flags
 	indexBeginOutputOptions = pallc;
 
-	for (ull i = 0; i < 5; ++i)
+	for (uint i = 0; i < 5; ++i)
 	{
 		//First Check, if a option is present and if so, set the flags
 		optionIdString = option[indexBeginOutputOptions + i].optionIdentificationString;
@@ -987,7 +987,7 @@ void ProgramOption::evaluateCommandLine()
 			// Set flag to active
 			option[indexBeginOutputOptions + i].optionSelected = true;
 
-			ull index2BeginOutputOptions = pcoc;
+			uint index2BeginOutputOptions = pcoc;
 			while (index2BeginOutputOptions < pmcsfautoa)
 			{
 				if (!option[index2BeginOutputOptions + i].optionSelected)
@@ -1039,9 +1039,9 @@ void ProgramOption::evaluateCommandLine()
 	// Prepend all data with directory
 	//directoryPathPrefix
 		// Go through all entries. FInd the first with doble string. Set it to fo
-	for (ull i = 1; i < 5; ++i)
+	for (uint i = 1; i < 5; ++i)
 	{
-		ull index1BeginOutputOptions = pallc;
+		uint index1BeginOutputOptions = pallc;
 		while (index1BeginOutputOptions < pmcsfautoa)
 		{
 			if (!option[index1BeginOutputOptions + i].optionParameterString.empty())
@@ -1056,7 +1056,7 @@ void ProgramOption::evaluateCommandLine()
 
 
 // In one group there may be several flags set. This functions sets the flags in a logical manner
-void ProgramOption::checkPrioritiesWithinGroups(ull index)
+void ProgramOption::checkPrioritiesWithinGroups(uint index)
 {
 	// -pallc					Write all Data to console
 	// -pallf "filename"		Write all Data to file "filename"
@@ -1131,10 +1131,10 @@ void ProgramOption::setOverwriteAppendFlag()
 	}
 
 	// Go through all output flags and set the global append mode flag
-	ull indexBeginOutputOptions{ pallc };
+	uint indexBeginOutputOptions{ pallc };
 	while (indexBeginOutputOptions < pmcsfautoa)
 	{
-		for (ull i = 0; i < 5; ++i)
+		for (uint i = 0; i < 5; ++i)
 		{
 			option[indexBeginOutputOptions + i].fileAppend = appendFlag;
 		}
@@ -1147,12 +1147,12 @@ void ProgramOption::setOverwriteAppendFlag()
 	if (option[fafwsfn].optionSelected)
 	{
 		// Go through all filenames and check if we have several identical filenames
-		ull index1BeginOutputOptions{ pallc };
+		uint index1BeginOutputOptions{ pallc };
 		while (index1BeginOutputOptions < (pmcsfautoa))
 		{
 			// Iterate over all elements in one group
 			// Start with 1 . So do not check output to std::cout
-			for (ull i = 1; i < 5; ++i)
+			for (uint i = 1; i < 5; ++i)
 			{
 				// If this specif option is selected
 				if (option[index1BeginOutputOptions + i].optionSelected)
@@ -1161,7 +1161,7 @@ void ProgramOption::setOverwriteAppendFlag()
 					if (!filenameFirst.empty() )
 					{
 						// Then compare this with the element from the following groups
-						ull index2BeginOutputOptions{ index1BeginOutputOptions + i + 5 };
+						uint index2BeginOutputOptions{ index1BeginOutputOptions + i + 5 };
 						while (index2BeginOutputOptions < pmcsfautoa)
 						{
 							// If the option in the other group is also selected
@@ -1189,7 +1189,7 @@ void ProgramOption::setOverwriteAppendFlag()
 		if (option[fo].optionSelected)
 		{
 			// Go through all entries. FInd the first with double string. Set it to fo
-			for (ull i = 1; i < 5; ++i)
+			for (uint i = 1; i < 5; ++i)
 			{
 				index1BeginOutputOptions = pallc;
 				while (index1BeginOutputOptions < pmcsfautoa)

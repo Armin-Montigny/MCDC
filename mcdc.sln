@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mcdc", "mcdc\mcdc.vcxproj", "{0A627A0E-8774-46E0-B8AF-ABEAD2210436}"
 EndProject
@@ -19,8 +19,8 @@ Global
 		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Debug|x86.Build.0 = Debug|x64
 		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x64.ActiveCfg = Release|x64
 		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x64.Build.0 = Release|x64
-		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x86.ActiveCfg = Release|x64
-		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x86.Build.0 = Release|x64
+		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x86.ActiveCfg = Debug|x64
+		{0A627A0E-8774-46E0-B8AF-ABEAD2210436}.Release|x86.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

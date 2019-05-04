@@ -174,7 +174,7 @@ void VirtualMachineForBooleanExpressions::load(ObjectCode& objectCode, const std
 		++counter;
 	}
 	// After program has bee created, provide space for machine registers
-	machineRegister.resize(static_cast<ull>(maxRegister) + 1, 0);
+	machineRegister.resize(static_cast<uint>(maxRegister) + 1, 0);
 
 	os << "\n\n";
 

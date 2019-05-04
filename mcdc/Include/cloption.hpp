@@ -332,7 +332,7 @@ protected:
 	bool checkIfStringIsAValidOption(const std::string& optString);
 
 	// Saome group options have priority over others. This will evaluate and set the values as desired
-	void checkPrioritiesWithinGroups(ull offset);
+	void checkPrioritiesWithinGroups(uint offset);
 
 	// Considers the handling of file open modes, dependent on flags and maybe similar filenames
 	void setOverwriteAppendFlag();

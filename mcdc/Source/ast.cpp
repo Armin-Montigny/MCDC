@@ -185,7 +185,7 @@ void VirtualMachineForAST::printTree(std::ostream& os)
 						outputLastPosition = lastPosition;
 					}
 					// Copy the temporary string to the output buffer (that is full of spaces) to the calculated column . 
-					memcpy(&out[0] + (static_cast<ull>(tab) * static_cast<ull>(ast[i].level)), strTemp.c_str(), strTemp.size());
+					memcpy(&out[0] + (static_cast<uint>(tab) * static_cast<uint>(ast[i].level)), strTemp.c_str(), strTemp.size());
 				}
 			}
 		}

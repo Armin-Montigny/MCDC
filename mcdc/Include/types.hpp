@@ -57,6 +57,7 @@ using sll = signed long long;
 using uint32 = uint_fast32_t;
 
 
+
 // In contrast to people loving nullptr and auto. These are not typesafe at all. They fit to everything. This we do not want to have
 // So this is a typesafe null for everything
 template <typename T>
