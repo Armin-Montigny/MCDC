@@ -449,7 +449,7 @@ void Mcdc::generateTestSets()
 		{
 			
 			// First check, if a complete test pair is part of one found coverage sets
-			// This is a preferred solution. We will reduce the number of test values with taht approach
+			// This is a preferred solution. We will reduce the number of test values with that approach
 			const auto[ completeTestPairAvailable,  independencePairFull] = isCompleteTestPairInCoverageResult(ippc.second, resultingCoverageSets[i]);
 			if (completeTestPairAvailable)
 			{
@@ -471,7 +471,7 @@ void Mcdc::generateTestSets()
 			}
 			if (found)
 			{
-				// Add first and secode part of the found pair to the result
+				// Add first and second part of the found pair to the result
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.first);
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.second);
 				// Show result to user. Show the test pair for this condition and for this coverage set

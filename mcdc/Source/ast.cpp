@@ -185,7 +185,7 @@ void VirtualMachineForAST::printTree(std::ostream& os)
 						outputLastPosition = lastPosition;
 					}
 					// Copy the temporary string to the output buffer (that is full of spaces) to the calculated column . 
-					memcpy(&out[0] + (static_cast<uint>(tab) * static_cast<uint>(ast[i].level)), strTemp.c_str(), strTemp.size());
+					memcpy(&out[0] + (static_cast<ull>(tab) * static_cast<ull>(ast[i].level)), strTemp.c_str(), strTemp.size());
 				}
 			}
 		}
@@ -198,65 +198,87 @@ void VirtualMachineForAST::printTree(std::ostream& os)
 
 
 
-
+// After the AST has been constrcuted, seveal properties will be set for all nodes
 void VirtualMachineForAST::calculateAstProperties()
 {
-	const uint rootIndex{ ast.rbegin()->ownID };
-	calculateAstPropertiesRecursive(rootIndex);
+	const uint rootIndex{ ast.rbegin()->ownID };	// Start with root
+	calculateAstPropertiesRecursive(rootIndex);		// And traverse the tree
 }
 
 
-
+// After all nodes have been added to the AST, some properties of the nodes
+// will be calculated and set.
+// parentID		This is a link to the parent node
+// level		for printing the AST, this is the level or deepness of the node in the tree
+// printRow		In which row this node shall be printed
+//
+// Depth First Traversal, Preorder (Root, Left, Right)
 void VirtualMachineForAST::calculateAstPropertiesRecursive(uint index)
 {
+	// If not yet done, compact the symbol table
 	symbolTable.compact();
 
+	// All ast nodes will get a level. The level is the deepness in the tree
+	// So th root is on level 0, the first children are on level 1, the grand children are on level 2 and so on 
 	ast[index].level = level;
 
-
+	// If this node is a leaf. Only a condition/variable/terminal can be a leaf
 	if (NumberOfChildren::zero == ast[index].numberOfChildren)
 	{
-
+		// To spped up things later, we store the mask for reading the correct source input value
 		ast[index].tokenWithAttribute.sourceMask = bitMask[symbolTable.normalizedInput[ast[index].tokenWithAttribute.sourceIndex]];
+		// And we store the name of the condition/variable/terminal
 		ast[index].tokenWithAttribute.inputSymbolLowerCase = narrow_cast<cchar>(std::tolower(ast[index].tokenWithAttribute.inputTerminalSymbol));
-
+		// Where to print. The leave is the master for determining row. Everything else is referenced to this row
 		ast[index].printRow = row;
 
+		// The next node will be 3 rows below
 		++row;
 		++row;
 	}
-	if (NumberOfChildren::one == ast[index].numberOfChildren)
+
+	// A node with only one child, e.g. NOT
+	else if (NumberOfChildren::one == ast[index].numberOfChildren)
 	{
+		// Make the linkage to the parent node for our child
+		// So, our child here, will recieve our own ID as parent ID
 		ast[ast[index].childLeftID].parentID = ast[index].ownID;
 
-
+		// We will go down one level, recursive call
 		++level;
 		calculateAstPropertiesRecursive(ast[index].childLeftID);
+		// And we are back from below, Reset level
 		--level;
+		// And this node will be printed one row below its child
 		ast[index].printRow = ast[ast[index].childLeftID].printRow + 1;
-
-
 	}
 
-	if (NumberOfChildren::two == ast[index].numberOfChildren)
+	// A node with 2 children, eg. Operation AND, XOR, OR
+	else if (NumberOfChildren::two == ast[index].numberOfChildren)
 	{
-
+		// Make the linkage to the parent node for our children
+		// So, our 2 children here, will recieve our own ID as parent ID
 		ast[ast[index].childLeftID].parentID = ast[index].ownID;
 		ast[ast[index].childRightID].parentID = ast[index].ownID;
 
 
+		// We will go down one level, recursive call
 		++level;
 		calculateAstPropertiesRecursive(ast[index].childLeftID);
 		calculateAstPropertiesRecursive(ast[index].childRightID);
+		// And we are back from below, Reset level
 		--level;
-
+		// And we will print this node in the middle (and above) of our 2 children
 		ast[index].printRow = (ast[ast[index].childLeftID].printRow + ast[ast[index].childRightID].printRow) / 2;
-
-	}
+	} // else nothing
 }
 
 
-
+// This is the application of the virtual machine for the AST
+// It takes a source value and uses the operations encoded in nodes and leave values
+// and calculates a result.
+//
+// Depth First Traversal, Preorder (Root, Left, Right)
 bool VirtualMachineForAST::evaluateTree(uint inputValue)
 {
 	sourceValue = inputValue;
@@ -264,56 +286,71 @@ bool VirtualMachineForAST::evaluateTree(uint inputValue)
 	evaluateTreeRecursive(rootIndex);
 	return ast[rootIndex].value;
 }
+
+// Recursive FUnction for wvaluating the boolean value of a node
+// Depth First Traversal, Preorder (Root, Left, Right)
 void VirtualMachineForAST::evaluateTreeRecursive(uint index)
 {
+	// Get a reference to the node and the number of children
 	AstNode& nodeAtIndex{ ast[index] };
 	const NumberOfChildren numberOfChildren{ nodeAtIndex.numberOfChildren };
 
+	// If the node has no children, then it is a leave, so, a condition/variable/terminal
+	// And we just nee to read the value from the source input value
 	if (NumberOfChildren::zero == numberOfChildren)
 	{
 		switch (nodeAtIndex.tokenWithAttribute.token)
 		{
+		// Can be the positive form
 		case Token::ID:
-			nodeAtIndex.value = (0U != (sourceValue&  nodeAtIndex.tokenWithAttribute.sourceMask));
-			nodeAtIndex.notEvaluated = false;
+			nodeAtIndex.value = (0U != (sourceValue & nodeAtIndex.tokenWithAttribute.sourceMask)); // Mask and copy source value
+			nodeAtIndex.notEvaluated = false;   // Used for boolean short cut evaluation. This value will be used
 			break;
+		// Or the negated form
 		case Token::IDNOT:
-			nodeAtIndex.value = (0U == (sourceValue&  nodeAtIndex.tokenWithAttribute.sourceMask));
-			nodeAtIndex.notEvaluated = false;
+			nodeAtIndex.value = (0U == (sourceValue & nodeAtIndex.tokenWithAttribute.sourceMask));// Mask and copy negated source value
+			nodeAtIndex.notEvaluated = false;	// Used for boolean short cut evaluation. This value will be used
 			break;
 		default:
-			nodeAtIndex.value = false;
+			// Should never happen. Error. Set value to false and
+			// boolean shortcut evaluation flag to true, meaning: don't use			nodeAtIndex.value = false;
 			nodeAtIndex.notEvaluated = true;
 			break;
 #pragma warning(suppress: 4061)
 		}
 	}
+	// This node has one child, e.g. this node is a END or a NOT or a closing bracket
 	else if (NumberOfChildren::one == numberOfChildren)
 	{
 		evaluateTreeRecursive(nodeAtIndex.childLeftID);
-		nodeAtIndex.notEvaluated = false;
+		nodeAtIndex.notEvaluated = false;	// Used for boolean short cut evaluation. This value will be used
 		switch (nodeAtIndex.tokenWithAttribute.token)
 		{
 		case Token::BCLOSE:  //fallthrough
 		case Token::END:
+			// Simply copy the value. No operation necessary
 			nodeAtIndex.value = ast[nodeAtIndex.childLeftID].value;
 			break;
 		case Token::NOT:
 			nodeAtIndex.value = !ast[nodeAtIndex.childLeftID].value;
 			break;
 		default:
-			nodeAtIndex.value = false;
+			// Should never happen. Error. Set value to false and
+			// boolean shortcut evaluation flag to true, meaning: don't use			nodeAtIndex.value = false;
 			nodeAtIndex.notEvaluated = true;
 			break;
 #pragma warning(suppress: 4061)
 		}
 	}
+	// This node has 2 children. It is a boolean operation: AND, XOR, Or
 	else if (NumberOfChildren::two == numberOfChildren)
 	{
+		// Before we can do the calculation for this node, we need the result of our children
 		evaluateTreeRecursive(nodeAtIndex.childLeftID);
 		evaluateTreeRecursive(nodeAtIndex.childRightID);
-		nodeAtIndex.notEvaluated = false;
+		nodeAtIndex.notEvaluated = false;	// Used for boolean short cut evaluation. This value will be used
 
+		// Perfrom the requested operation on the values of our children
 		switch (nodeAtIndex.tokenWithAttribute.token)
 		{
 		case Token::AND:
@@ -327,55 +364,63 @@ void VirtualMachineForAST::evaluateTreeRecursive(uint index)
 			break;
 
 		default:
+			// Should never happen. Error. Set value to false and
+			// boolean shortcut evaluation flag to true, meaning: don't use
 			nodeAtIndex.value = false;
 			nodeAtIndex.notEvaluated = true;
 			break;
 #pragma warning(suppress: 4061)
 		}
-	}
-
-	bool isNotEvaluated{ false };
+	} // else nothing
 
 
-	// Boolean short circuit evaluation
-	switch (nodeAtIndex.tokenWithAttribute.token)
+	// If boolean short cut evaluation is requested by program options
+	if (programOption.option[ProgramOption::bse].optionSelected)
 	{
-	case Token::AND:
-		if (!ast[nodeAtIndex.childLeftID].value)
+		// Now we are checking for the boolean "Annihilation"
+		// This is needed for boolean short cut evaluation
+		// If the left side of the AND is FALSE, then no need to evaluate the right side
+		// If the left side of the OR is TRUE, then no need to evaluate the right side
+		bool isNotEvaluated{ false };
+		// Boolean short circuit evaluation
+		switch (nodeAtIndex.tokenWithAttribute.token)
 		{
-			// Right side of tree is notEvaluated
-			isNotEvaluated = true;
-		}
-		break;
-	case Token::OR:
-		if (ast[nodeAtIndex.childLeftID].value)
-		{
-			// Right side of tree is notEvaluated
-			isNotEvaluated = true;
-		}
-		break;
+		case Token::AND:
+			if (!ast[nodeAtIndex.childLeftID].value)
+			{
+				// Right side of tree is notEvaluated
+				isNotEvaluated = true;
+			}
+			break;
+		case Token::OR:
+			if (ast[nodeAtIndex.childLeftID].value)
+			{
+				// Right side of tree is notEvaluated
+				isNotEvaluated = true;
+			}
+			break;
+		default:
+			break;
 #pragma warning(suppress: 4061)
-#pragma warning(suppress: 4062)
-	}
-	if (isNotEvaluated)
-	{
-		// ***************************************************************************
-		// ***************************************************************************
-		// ***************************************************************************
-		// ***************************************************************************
-		if (programOption.option[ProgramOption::bse].optionSelected)
+		}
+		// If there is a short cut, either for and or for or
+		if (isNotEvaluated)
 		{
+			// Set the whole right subtree to "not evealuated" or "masked"
 			setSubTreetoMasked(nodeAtIndex.childRightID);
 		}
 	}
-
 }
+
+// Traverse subtree in preorder and set all flags for boolean short cut evaluation
+// to "do not evaluate" or "masked" or "deactivated" or whatever you wanna call it
 void VirtualMachineForAST::setSubTreetoMasked(uint index)
 {
+	// Set flage
 	ast[index].notEvaluated = true;
-	if (NumberOfChildren::zero == ast[index].numberOfChildren)
-	{
-	}
+
+	// Traverse the tree
+	if (NumberOfChildren::zero == ast[index].numberOfChildren) {}
 	else if (NumberOfChildren ::one == ast[index].numberOfChildren)
 	{
 		setSubTreetoMasked(ast[index].childLeftID);
