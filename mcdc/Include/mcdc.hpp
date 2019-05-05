@@ -125,6 +125,7 @@
 #include <array>
 
 // Type of MCDC for a test pair
+// Sequence of this values must not be changed!
 enum class McdcType : uint
 {
 	UniqueCause,
@@ -155,7 +156,7 @@ struct McdcIndependencePair
 	McdcIndependencePair(const McdcIndependencePair&& other) noexcept { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; };
 
 	McdcIndependencePair& operator =(const McdcIndependencePair& other) noexcept { mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; return *this; }
-	McdcIndependencePair& operator =(const McdcIndependencePair&&) = delete;
+	McdcIndependencePair& operator =(const McdcIndependencePair&& other) noexcept{ mcdcType = other.mcdcType; influencingCondition = other.influencingCondition; independencePair = other.independencePair; return *this; };
 
 	~McdcIndependencePair() {}
 
@@ -216,8 +217,10 @@ protected:
 	void initializeMcdcCoverageMethod(void);
 
 	// Helps to select "good" test pairs
-	std::pair<bool, McdcIndependencePair> isCompleteTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs);
-	std::pair<bool, McdcIndependencePair> isOnePartOfTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs);
+	//std::pair<bool, McdcIndependencePair> isCompleteTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs);
+	//std::pair<bool, McdcIndependencePair> isOnePartOfTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs);
+	bool isCompleteTestPairInCoverageResult(const McdcIndependencePair& mip, const CellVectorHeaderSet& cvhs);
+	bool isOnePartOfTestPairInCoverageResult(const McdcIndependencePair& mip, const CellVectorHeaderSet& cvhs);
 
 
 	// Best cost and heuristic function for selecting minimum test pairs
@@ -228,6 +231,8 @@ protected:
 	// If there is only one independence test pair per condition, we do not need to find a best solution for a coverage of variables
 	bool isMax1IndependencePairPerCondition();
 
+	// Best cost selector function
+	McdcIndependencePair findBestResultingIndependencePair(TestVector& resultingIndependencePairPerVariableXPair);
 
 
 	// All MCDC Indpenden Test Pairs

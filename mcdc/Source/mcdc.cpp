@@ -288,6 +288,7 @@ void  Mcdc::initializeMcdcCoverageMethod()
 	}
 }
 
+
 // The software calculatest test vectors for influencing conditions
 // For example for "!((a+b)(c+d))" the following pairs will be found
 
@@ -302,43 +303,40 @@ void  Mcdc::initializeMcdcCoverageMethod()
 //
 // Now check that
 
-std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs)
+bool Mcdc::isCompleteTestPairInCoverageResult(const McdcIndependencePair& mip, const CellVectorHeaderSet& cvhs)
 {
 	// Test if a complete Test pair is part of the Coverage Result
 	// Resulting values that will be returned to function caller
 	bool found{ false };					// We found a double match
-	McdcIndependencePair mipResult{};		// And the corresponding test pair
 
 	// We will check for only in test pairs with the same MCDC type
 	const McdcType mcdcType[3]{ McdcType::UniqueCause, McdcType::UniqueCauseMasking, McdcType::Masking };
-	// Go through MCDC types
+	// We are iterating over the sequence of MCDC types
+	// Because we want to favour "Unique Cause" over "Unique Cause + Masking" over "Masking"
+	// If we find something, we will return immediately and this will then have priority
 	for (uint mcdcTypeIndex = 0; !found && (mcdcTypeIndex < 3); ++mcdcTypeIndex)
 	{
-		// Check given mcdcIndependencePairs
-		for (const McdcIndependencePair& mip : mips)
-		{
-			// If rwong type, then ignore and goto next
-			if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
+		// Check given mcdcIndependencePair
 
-			// Get left and right of pair
-			const uint v1{ mip.independencePair.first };
-			const uint v2{ mip.independencePair.second	};
-			// And check if they are both in one column of the coverage table
-			CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
-			if (cvhs.end() != i1)
-			{	// This is an AND. Search 2 times and both results must be true
-				CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
-				if (cvhs.end() != i2)
-				{
-					// Yep, result is good
-					found = true;		// Set return values
-					mipResult = mip;
-					break;				// And stop searching
-				}
+		// If rwong type, then ignore and goto next
+		if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
+
+		// Get left and right of pair
+		const uint v1{ mip.independencePair.first };
+		const uint v2{ mip.independencePair.second	};
+		// And check if they are both in one column of the coverage table
+		CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
+		if (cvhs.end() != i1)
+		{	// This is an AND. Search 2 times and both results must be true
+			CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
+			if (cvhs.end() != i2)
+			{
+				// Yep, result is good
+				found = true;		// Set return values
 			}
 		}
 	}
-	return std::make_pair(found, mipResult);
+	return found;
 }
 
 
@@ -346,50 +344,44 @@ std::pair<bool, McdcIndependencePair> Mcdc::isCompleteTestPairInCoverageResult(c
 
 // Same as above. But only one test value needs to be part of test pair
 // Of course this is essential, otherwise we can forget that test pair
-std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(const McdcIndependencePairSet& mips, const CellVectorHeaderSet& cvhs)
+bool Mcdc::isOnePartOfTestPairInCoverageResult(const McdcIndependencePair& mip, const CellVectorHeaderSet& cvhs)
 {
 	// Test if a complete Test pair is part of the Coverage Result
 	bool found{ false };
-	McdcIndependencePair mipResult;
 
 	// Please note. The sequence  is impotant here.
 	// We will find the first fiiting test pair in the below sequence of types
 	const McdcType mcdcType[3]{ McdcType::UniqueCause, McdcType::UniqueCauseMasking, McdcType::Masking };
 
+	// We are iterating over the sequence of MCDC types
+	// Because we want to favour "Unique Cause" over "Unique Cause + Masking" over "Masking"
+	// If we find something, we will return immediately and this will then have priority
 	for (uint mcdcTypeIndex = 0; !found && (mcdcTypeIndex < 3); ++mcdcTypeIndex)
 	{
-		for (const McdcIndependencePair& mip : mips)
+		// If rwong type, then ignore and goto next
+		if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
+
+		// Get left and right of pair
+		const uint v1{ mip.independencePair.first };
+		const uint v2{ mip.independencePair.second };
+
+		// This is an OR. Find either in the one or the other column
+		CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
+		if (cvhs.end() != i1)
 		{
-			// If rwong type, then ignore and goto next
-			if (mip.mcdcType != mcdcType[mcdcTypeIndex]) continue;
-
-			// Get left and right of pair
-			const uint v1{ mip.independencePair.first };
-			const uint v2{ mip.independencePair.second };
-
-			// This is an OR. Find either in the one or the other column
-			CellVectorHeaderSet::iterator i1{ std::find_if(cvhs.begin(), cvhs.end(), [v1](const CellVectorHeader & cvh) {return (v1 == cvh.index); }) };
-			if (cvhs.end() != i1)
+			found = true;		// Set return values
+		}
+		else
+		{
+			CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
+			if (cvhs.end() != i2)
 			{
 				found = true;		// Set return values
-				mipResult = mip;
-				break;				// And stop searching
-			}
-			else
-			{
-				CellVectorHeaderSet::iterator i2{ std::find_if(cvhs.begin(), cvhs.end(), [v2](const CellVectorHeader & cvh) {return (v2 == cvh.index); }) };
-				if (cvhs.end() != i2)
-				{
-					found = true;		// Set return values
-					mipResult = mip;
-					break;				// And stop searching
-				}
 			}
 		}
 	}
-	return std::make_pair(found, mipResult);
+	return found;
 }
-
 
 // After MCDC Test pairs have been found by analysing and evaluating the boolen expressions
 // abstract syntax tree, we want to identify a minimum test vector that covers all conditions.
@@ -438,48 +430,99 @@ void Mcdc::generateTestSets()
 	{
 		os << "\n-------- For Coverage set " << std::setw(3) << (i + 1) << "    ----------------------------------------------------\n\n";
 
-		// Find a test pair for each varaible
-		bool found{ false };
+
 
 		McdcIndependencePair resultingIndependencePair; // Found test pair for for this coverage set 
 		TestSet testSetForOneVariable;					// And the found test set for one condition for the coverage set under evaluation
 
+
+
+
+		
+		// 
+		//
+		// Strategy:
+		// If we have a test pair that has both test values beeing a part of the coverage set (independencePairFull),
+		// then we favour this over a test pair that contains only one member of the test vector (independencePairPart)
+		// (None is not allowed, then we continue the seacrh
+		//
+		// One variable may have more possible solutions in either the group "independencePairFull" or in the group of "independencePairPart"
+		//
+		// If there is more than one possible solution in one group, then we need to select only one.
+		// The heuristics is here, to chose the test pair with the smallest number of different set bits
+
+
 		// Check the resulting independece pairs grouped by influencing condition
+		// So, for each influencing condidtion
 		for (const std::pair<const cchar, McdcIndependencePairSet>& ippc : independencePairPerCondition)
 		{
-			
-			// First check, if a complete test pair is part of one found coverage sets
-			// This is a preferred solution. We will reduce the number of test values with that approach
-			const auto[ completeTestPairAvailable,  independencePairFull] = isCompleteTestPairInCoverageResult(ippc.second, resultingCoverageSets[i]);
-			if (completeTestPairAvailable)
+			bool found{ false };
+			bool foundCompleteTestPair{ false };
+			bool foundPartTestPair{ false };
+			// Find a test pair for each variable
+			TestVector resultingIndependencePairPerVariableFullPair{};
+			TestVector resultingIndependencePairPerVariableHalfPair{};
+
+
+			// Because there may be more than one test pair per condition, we want to check all 
+			// possible test pairs per condition and then select the "best"
+			// Go through all possible test pairs for that condition
+			for (const McdcIndependencePair& mip : ippc.second)
 			{
-				// Store this pair as a result
-				resultingIndependencePair = independencePairFull;
-				found = true;
-			}
-			else
-			{
-				// Could not find complete test pair in the coverage set
-				// We MUST find a least one test value
-				const auto[partTestPairAvailable, independencePairPart] = isOnePartOfTestPairInCoverageResult(ippc.second, resultingCoverageSets[i]);
-				if (partTestPairAvailable)
+				// First check, if a complete test pair is part of one found coverage sets
+				// This is a preferred solution. We will reduce the number of test values with that approach
+				if (isCompleteTestPairInCoverageResult(mip, resultingCoverageSets[i]))
 				{
-					// Found in this evaluation cycle
-					resultingIndependencePair = independencePairPart;
-					found = true;
+					// Store this pair as a result
+					resultingIndependencePairPerVariableFullPair.push_back(mip);
+					foundCompleteTestPair = true;
+				}
+				else	// we did not find a test pair, containing both values, therefore search for a test pair containing at least one value
+				{		// This must be in an else branch, because, if we would have already detected a value in the if branch
+						//We would detect it here again
+					if (isOnePartOfTestPairInCoverageResult(mip, resultingCoverageSets[i]))
+					{
+						// Found in this evaluation cycle
+						resultingIndependencePairPerVariableHalfPair.push_back(mip);
+						foundPartTestPair = true;
+					}
 				}
 			}
+			// Now we want to do some heuristics
+			// If a test pair has both its value in the test vector, then we prefer this solution
+			if (foundCompleteTestPair)
+			{
+				// There maybe more than on solution. If so, we want to find the "best"
+				resultingIndependencePair = findBestResultingIndependencePair(resultingIndependencePairPerVariableFullPair);
+				found = true;
+			}
+			else if (foundPartTestPair)
+			{
+				// If a test pair has both its value in the test vector, then we prefer this solution
+				// But there was none.
+				// Only 1 value of the pair was in the test vector. Better than nothing, take that
+				// There maybe more than on solution. If so, we want to find the "best"
+				resultingIndependencePair = findBestResultingIndependencePair(resultingIndependencePairPerVariableHalfPair);
+				found = true;
+			}
+			// else nothing found. Do nothing
+
+
 			if (found)
 			{
+
+
 				// Add first and second part of the found pair to the result
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.first);
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.second);
+
 				// Show result to user. Show the test pair for this condition and for this coverage set
 				os << "Test Pair for Condition '" << ippc.first << "':  " << std::setw(3) << resultingIndependencePair.independencePair.first
 					<< ' ' << std::setw(3) << resultingIndependencePair.independencePair.second << "   (" << mcdcTypeToString(resultingIndependencePair.mcdcType) << ")\n";
 			}
 			// else, ignore, store nothing and check next
 		}
+		// else, ignore, store nothing and check next
 
 		// After we have found and shown test pairs for all conditions for this coverage set
 		// We will show a vector of test values (derived from the test pairs)
@@ -491,6 +534,8 @@ void Mcdc::generateTestSets()
 		os << "\n\n";
 		// And save the complete result in a vector grouped by all coverage sets
 		allTestSets.insert(testSetForOneVariable);
+
+
 	}
 
 	// We went through all coverage sets
@@ -505,6 +550,30 @@ void Mcdc::generateTestSets()
 
 	// Done
 	// Main Purpose of whole software program is finsihed now
+}
+
+McdcIndependencePair Mcdc::findBestResultingIndependencePair(TestVector& resultingIndependencePairPerVariableXPair)
+{
+	uint bestSelectionIndex{ 0 };
+	uint bestCostSum{ 0 };
+	auto deltaBitCount = [](uint first, uint second) { return static_cast<uint>(MaxNumberOfBitsForEvaluation - std::abs(static_cast<int>(numberOfSetBits(first)) - static_cast<int>(numberOfSetBits(second)))); };
+	
+	//numberOfSetBits
+	
+	for (uint i = 0; i < narrow_cast<uint>(resultingIndependencePairPerVariableXPair.size()); ++i)
+	{
+		uint sum
+		{ 
+			(static_cast<uint>(McdcType::NONE) - static_cast<uint>(resultingIndependencePairPerVariableXPair[i].mcdcType)) * MaxNumberOfBitsForEvaluation +
+			deltaBitCount(resultingIndependencePairPerVariableXPair[i].independencePair.first, resultingIndependencePairPerVariableXPair[i].independencePair.second)
+		};
+		if (sum > bestCostSum)
+		{
+			bestCostSum = sum;
+			bestSelectionIndex = i;
+		}
+	}
+	return resultingIndependencePairPerVariableXPair[bestSelectionIndex];
 }
 
 

@@ -119,9 +119,9 @@ using NumberOfBitsCountType = uint;
 	// Number of set bits in an unsigned integer type
 	constexpr NumberOfBitsCountType numberOfSetBits(MinTermType x)
 	{
-		x = x - ((x >> 1)&  0x5555);
+		x = x - ((x >> 1) & 0x5555);
 		x = (x&  0x3333) + ((x >> 2)&  0x3333);
-		x = (x + (x >> 4))&  0x0F0F;
+		x = (x + (x >> 4)) & 0x0F0F;
 		x = x + (x >> 8);
 		return narrow_cast<NumberOfBitsCountType>(x&  0x003F);
 	}
