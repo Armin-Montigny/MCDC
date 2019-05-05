@@ -400,7 +400,7 @@ std::pair<bool, McdcIndependencePair> Mcdc::isOnePartOfTestPairInCoverageResult(
 // Some heuristic methods are used to come to a desired conclusion
 
 // Parameters symbolTable and mintermVector or only needed for output functions
-void Mcdc::generateTestSets(const SymbolTable& symbolTable, const MintermVector& mintermVector)
+void Mcdc::generateTestSets()
 {
 	// Dependent on complexity, find correct output stream 
 	const ulong notDroppedElements{ coverage.countNotDroppedTableElements() };
@@ -495,12 +495,12 @@ void Mcdc::generateTestSets(const SymbolTable& symbolTable, const MintermVector&
 
 	// We went through all coverage sets
 	// Now we want to show the recomended test set to the user
-	printResult(allTestSets, os, symbolTable, mintermVector);
+	printResult(allTestSets, os);
 
 	// If it has not yet been printed to cout, then print it anyway
 	if (!outStreamSelection.hasStdOut())
 	{
-		printResult(allTestSets, std::cout, symbolTable, mintermVector);
+		printResult(allTestSets, std::cout);
 	}
 
 	// Done
@@ -524,7 +524,7 @@ void Mcdc::generateTestSets(const SymbolTable& symbolTable, const MintermVector&
 //	9 : a = 1  b = 0  c = 0  d = 1    (0)
 //
 
-void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, const SymbolTable& symbolTable, const MintermVector& mv)
+void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os)
 {
 	// If there is only one solution
 	// Meaning the coverage set had only one member
@@ -543,14 +543,14 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 		for (const uint t : *allTestSets.begin())
 		{
 			os << std::setw(5) << t << ":  ";
-			SymbolType::size_type v{ symbolTable.symbol.size() - 1 };
-			for (const cchar c : symbolTable.symbol)
+			SymbolType::size_type v{ astUsedForMcdcCalculation.symbolTable.symbol.size() - 1 };
+			for (const cchar c : astUsedForMcdcCalculation.symbolTable.symbol)
 			{
 				os << c << '=' << ((0U !=  (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			const uint count{ narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)) };
-			os << "  (" << count << ")\n";
+			const uint resultingDecision = astUsedForMcdcCalculation.evaluateTree(t) ? 1U : 0U;
+			os << "  (" << resultingDecision << ")\n";
 		}
 		os << "\n\n";
 	}
@@ -586,14 +586,14 @@ void Mcdc::printResult(const std::set<TestSet>& allTestSets, std::ostream& os, c
 		for (const uint t : minTestSet)
 		{
 			os << std::setw(5) <<t << ":  ";
-			SymbolType::size_type v{ symbolTable.symbol.size() - 1 };
-			for (const cchar c : symbolTable.symbol)
+			SymbolType::size_type v{ astUsedForMcdcCalculation.symbolTable.symbol.size() - 1 };
+			for (const cchar c : astUsedForMcdcCalculation.symbolTable.symbol)
 			{
 				os << c << '=' << ((0U != (t&  bitMask[v])) ? '1' : '0') << "  ";
 				--v;
 			}
-			const uint count{ narrow_cast<uint>(std::count(mv.begin(), mv.end(), t)) };
-			os << "  (" << count << ")\n";
+			const uint resultingDecision = astUsedForMcdcCalculation.evaluateTree(t) ? 1U : 0U;
+			os << "  (" << resultingDecision << ")\n";
 
 		}
 		os << "\n\n";
@@ -639,13 +639,15 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 	std::set<uint> testSetUniqueCauseMaskingMCDC{};
 	std::set<uint> testSetMaskingMCDC{};
 
-
+	// Store a local copy
+	astUsedForMcdcCalculation = ast;
 
 
 	// Number of different conditions in the given AST
 	const uint maxConditions{ ast.maxConditionsInTree() };
 
 	{	// We want to close the file before calling the next function
+		// Therfore we open a new block
 		
 		// Determine the desired output stream
 		const bool predicateForOutputToFile{ (maxConditions > 3) };
@@ -671,7 +673,7 @@ void Mcdc::findMcdcIndependencePairs(VirtualMachineForAST& ast)
 		// For all possible test values, depending on the number of conditions
 		for (uint i = 0U; i < maxLoop; ++i)
 		{
-			astForEvaluation.evaluateTree(i);				// EValuate the result
+			static_cast<void>(astForEvaluation.evaluateTree(i));		// EValuate the result
 			astPreEvaluated.push_back(astForEvaluation);	// And store it for later reference
 		}
 

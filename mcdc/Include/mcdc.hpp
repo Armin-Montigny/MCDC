@@ -174,7 +174,7 @@ public:
 	void findMcdcIndependencePairs(VirtualMachineForAST& ast);
 
 	// Select the test set as a result of the brute force search
-	void generateTestSets(const SymbolTable& symbolTable, const MintermVector& mv);
+	void generateTestSets();
 
 protected:
 
@@ -204,7 +204,7 @@ protected:
 
 
 	// Print evaluated and calculated "best" test sets
-	void printResult(const std::set<TestSet>& allTestSets, std::ostream& os, const SymbolTable& symbolTable, const MintermVector& mv);
+	void printResult(const std::set<TestSet>& allTestSets, std::ostream& os);
 
 	// After a new MCDC test pair has been found, we will add it to our interanl list for further processing
 	void add(McdcIndependencePair mcdcIndependencePair);
@@ -247,6 +247,8 @@ protected:
 	// Used for calculation of minimum possible test set
 	Coverage coverage{};
 
+	// For output display purposes
+	VirtualMachineForAST astUsedForMcdcCalculation{};
 };
 
 

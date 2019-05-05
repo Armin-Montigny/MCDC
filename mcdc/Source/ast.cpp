@@ -257,11 +257,12 @@ void VirtualMachineForAST::calculateAstPropertiesRecursive(uint index)
 
 
 
-void VirtualMachineForAST::evaluateTree(uint inputValue)
+bool VirtualMachineForAST::evaluateTree(uint inputValue)
 {
 	sourceValue = inputValue;
 	const uint rootIndex{ ast.rbegin()->ownID };
 	evaluateTreeRecursive(rootIndex);
+	return ast[rootIndex].value;
 }
 void VirtualMachineForAST::evaluateTreeRecursive(uint index)
 {

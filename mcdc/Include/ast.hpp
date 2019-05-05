@@ -160,7 +160,7 @@ public:
 	uint maxConditionsInTree() noexcept { return symbolTable.numberOfSymbols();	}
 
 	// This sets the varaibles/terminals/conditions to a value and calculates the result according the the rules of boolean algebra
-	void evaluateTree(uint inputValue);
+	bool evaluateTree(uint inputValue);
 
 	// The AST. And yes, it is public.
 	AST ast{};

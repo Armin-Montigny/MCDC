@@ -172,7 +172,7 @@ sint main(const sint argc, const cchar* const argv[])
                 Mcdc mcdc;
 
                 mcdc.findMcdcIndependencePairs(virtualMachineForAST);
-                mcdc.generateTestSets(virtualMachineForAST.symbolTable, mv);
+                mcdc.generateTestSets();
             }
         }
     }
