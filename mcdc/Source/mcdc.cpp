@@ -247,6 +247,7 @@ void  Mcdc::initializeMcdcCoverageMethod()
 				++linePrintCounter;
 			}
 		}
+		printNotCoveredSymbols(os);
 		os << "\n\n";
 	}
 
@@ -430,16 +431,8 @@ void Mcdc::generateTestSets()
 	{
 		os << "\n-------- For Coverage set " << std::setw(3) << (i + 1) << "    ----------------------------------------------------\n\n";
 
-
-
 		McdcIndependencePair resultingIndependencePair; // Found test pair for for this coverage set 
 		TestSet testSetForOneVariable;					// And the found test set for one condition for the coverage set under evaluation
-
-
-
-
-		
-		// 
 		//
 		// Strategy:
 		// If we have a test pair that has both test values beeing a part of the coverage set (independencePairFull),
@@ -450,7 +443,6 @@ void Mcdc::generateTestSets()
 		//
 		// If there is more than one possible solution in one group, then we need to select only one.
 		// The heuristics is here, to chose the test pair with the smallest number of different set bits
-
 
 		// Check the resulting independece pairs grouped by influencing condition
 		// So, for each influencing condidtion
@@ -507,11 +499,8 @@ void Mcdc::generateTestSets()
 			}
 			// else nothing found. Do nothing
 
-
 			if (found)
 			{
-
-
 				// Add first and second part of the found pair to the result
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.first);
 				testSetForOneVariable.insert(resultingIndependencePair.independencePair.second);
@@ -520,9 +509,11 @@ void Mcdc::generateTestSets()
 				os << "Test Pair for Condition '" << ippc.first << "':  " << std::setw(3) << resultingIndependencePair.independencePair.first
 					<< ' ' << std::setw(3) << resultingIndependencePair.independencePair.second << "   (" << mcdcTypeToString(resultingIndependencePair.mcdcType) << ")\n";
 			}
-			// else, ignore, store nothing and check next
+			// else nothing
+			
 		}
 		// else, ignore, store nothing and check next
+		printNotCoveredSymbols(os);
 
 		// After we have found and shown test pairs for all conditions for this coverage set
 		// We will show a vector of test values (derived from the test pairs)
@@ -577,6 +568,17 @@ McdcIndependencePair Mcdc::findBestResultingIndependencePair(TestVector& resulti
 }
 
 
+void Mcdc::printNotCoveredSymbols(std::ostream& os)
+{
+	os << '\n';
+	for (cchar symbol : astUsedForMcdcCalculation.symbolTable.symbol)
+	{
+		if (!independencePairPerCondition.empty() && (independencePairPerCondition.count(symbol) == 0))
+		{
+			os << "*** No Test Pair for Condition  '" << symbol << "'\n";
+		}
+	}
+}
 
 // Show the result of all calculations to the user
 // The last 3 parameters for for output only

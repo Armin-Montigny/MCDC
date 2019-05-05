@@ -206,6 +206,7 @@ protected:
 
 	// Print evaluated and calculated "best" test sets
 	void printResult(const std::set<TestSet>& allTestSets, std::ostream& os);
+	void printNotCoveredSymbols(std::ostream& os);
 
 	// After a new MCDC test pair has been found, we will add it to our interanl list for further processing
 	void add(McdcIndependencePair mcdcIndependencePair);
