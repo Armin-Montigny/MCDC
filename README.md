@@ -1,58 +1,138 @@
-# Evaluation of Boolean Expressions and MCDC
+# Evaluation of Boolean Expressions and MCDC test cases
 
 An application for gaining a better understanding of MCDC
 
-Brief Introduction to MCDC
-==========================
+Minimization of boolean expressions
+Creation of MCDC test cases
 
-In automotive Functional Safety (FuSa) relevant projects you will often
-hear the term MC/DC. MC/DC is the abbreviation for Modified Condition /
-Decision Coverage. It is a part of the family of Structural Coverage
-metrics that are used to check the thoroughness of tests, for example:
-requirements-based tests. With that more failures shall be detected
-early and consequently prevented.
+# Brief Introduction to MCDC
+
+# Unit Testing / Verification
+
+Unit testing/verification strategies often contain requirements regarding
+structural coverage. Metrics are used to evaluate the completeness of test 
+cases and to demonstrate that there is no unintended functionality.
+Analysis of structural coverage can reveal shortcomings in requirement-based 
+test cases, inadequacies in requirements, dead code, deactivated code or 
+unintended functionality. If the measured and achieved structural coverage 
+is considered insufficient, either additional test cases shall be specified 
+or a rationale shall be provided.
+
+Software Unit Test/Verification is necessary to verify software units and
+to provide evidence that for the compliance of the software units with the
+software detailed design and with non-functional software requirements.
+
+Methods for software uint testing are:
+ - Requirements based test
+ - Interface test
+ - Fault injection test
+ - Resource usage test
+ - Back-to-back comparison between models and code
+ - and more . . .
+
+From the methods above, test cases need to be derived. Methods for deriving 
+tests case are:
+ - Analysis of requirements
+ - Generation and analysis of equivalence classes
+ - Analysis of boundary values
+ - Error guessing
+ - and more . . .
+
+# Structural Coverage
+
+As mentioned above, the completeness of tests can be shown by structural
+coverage methods. There are many different procedures available. And the
+more complex operations subsume the easier ones. Here a brief overview.
+
+![Overview Coverage Types](https://i.stack.imgur.com/LfOAn.png) 
+
+There are additional coverage types like Loop Coverage or Function coverage.
+Also this methods will add some additional value in the area of 15-20%.
+
+However, there is a recomendation for safety relavant software in the
+avionics and the automotive industry, for example in DO178 or ISO 26262.
+
+The metric that should be used and that is sufficient, even for safety critical
+projects, is MD/DC:  Modified Condition Decision Coverage
+
+That is the most effective method and reduces computation time and memory
+consumption compared to a full MCC (Multiple Condition Coverage). Where
+MCC (based on the number of conditions n) needs 2^n testcases, MCDC needs only 
+n+1 test cases. With growing number of conditions, this difference is significant.
+
+# MCDC
+
+MCDC has the disadvantage that not many people are fully understanding
+how it works. The reason for that is many scattered, complicated, insufficent
+and not up to date documentation. Even Wikipedia is not fully complete.
+
+A better starting point is 
+
+"An Investigation of Three Forms of the Modified Condition Decision
+Coverage (MCDC) Criterion", "DOT/FAA/AR-01/18", "U.S. Department of
+Transportation, Federal Aviation Administration"
+
+# MCDC Definitions
 
 In most FuSa trainings you will just learn about one type of MC/DC, the
-so called "unique cause" MCDC. But this works in only very few cases,
+so called "Unique Cause" MCDC. But this works in only very few cases,
 because often you have strongly or weakly coupled conditions. See the
 simple C-Example statement "if ((a && b) \|\| (a && c)). Here you have 2
 times condition "a" in the boolean expression. A "unique cause"-MC/DC as
 per the original definition is not possible. And the basic problem here
-is the Blackbox view, where you definitely need a Whitebox view (know
-the source code) to be able to measure structural coverage.
+is the Blackbox approach, where you shoulddefinitely use a Whitebox view 
+(know the source code) to be able to measure structural coverage.
 
 To resolve this problematic of strongly (weakly) coupled conditions in
 boolean expressions for MC/DC, additional types of MC/DC have been
-defined:
+defined
 
 -   "Masking MC/DC"
-
 -   "Unique Cause + Masking MC/DC".
 
-Here the Definition for all types of MC/DC:
 
--   Unique Cause MC/DC: For 2 test cases / test vectors / values of
-    conditions for an expression, exactly one condition changed and the
-    result of the boolean expression (the decision) changed also its
-    value. The modification of this one input condition had an influence
-    on the decision.
+# MCDC Types
 
--   Masking MC/DC: For 2 test cases / test vectors / values of
-    conditions for an expression, one condition changed with the result
-    of changing the decision. Other conditions may have also changed,
-    but they had no influence on the decision, because their effect is
-    masked by other boolean expressions.
+To achieve MCDC you need to find at least one Test Pair for each condition 
+in your boolean expression that fulfills the MCDC criterion.
 
--   Unique Cause + Masking MC/DC: Here a unique cause for all uncoupled
-    conditions is required. For strongly coupled conditions, masking is
-    allowed (see above).
+At the moment there are 3 types of MCDC defined and approved by certification 
+bodies (e.g. FAA):
+ - "Unique Cause" – MCDC (original definition): Only one, specifically the 
+ influencing condition may change between the two test values of the test pair. 
+ The resulting decision, the result of the boolean expression, must also be 
+ different for the 2 test values of the test pair. All other conditions in the 
+ test pair must be fixed and unchanged.
+ - "Masking" – MCDC”: Only one condition of the boolean expression having an
+ influence on the outcome of the decision may change. Other conditions may 
+ change as well, but must be masked. Masked means, using the boolean logic in 
+ the expression, they will not have an influence on the outcome. If the left 
+ side of an AND is FALSE, then the complete rightside  expression and sub expressions
+ do not matter. They are masked. Masking is a relaxation of  the “Unique Cause”MCDC.
+ - "Unique Cause + Masking" – MCDC. This is a hybrid and especially needed for boolean 
+ expressions with strongly coupled conditions like for example in “ab+ac”. It is not 
+ possible to find a test pair for condition “a” the fulfills "Unique Cause" – MCDC. 
+ So, we can relax the original definition, and allow masking for strongly coupled conditions.
 
-Applied Method
-==============
+With these 2 additional definitions much more test pairs can be found.
 
-For many people, the MC/DC definitions are hard to understand. The
-presented software helps to illustrate the construction of MC/DC test
-cases. The main algorithms are based on:
+Please note additionally that, when using languages with a boolean short cut evaluation 
+strategy (like Java, C, C++), there are even more test pairs fulfilling MCDC criteria.
+
+Very important and as already mentioned, you must understand that a BlackBox view on a truth
+table does not allow to find any kind of Masking or boolean short cut evaluation.
+
+MCDC is a structural coverage metric and so a WhiteBox View on the boolean expression 
+is absolutely mandatory.
+
+
+# Applied Method
+
+To gain a better understanding on MCDC, this software hase been devolped. 
+The presented software helps to illustrate the construction of MC/DC test
+cases. 
+
+Again. The main algorithms are based on:
 
 "An Investigation of Three Forms of the Modified Condition Decision
 Coverage (MCDC) Criterion", "DOT/FAA/AR-01/18", "U.S. Department of
@@ -159,8 +239,8 @@ logic. Therefor this test vector (0, 15) is MCDC for condition b.
 The developed software shows all this ASTs and helps to understand the
 MC/DC logic.
 
-Mode of Operation
-=================
+# Mode of Operation
+
 
 Special Settings can be used to control the mode of operation.
 
@@ -168,8 +248,7 @@ Special Settings can be used to control the mode of operation.
 
 -   Usage of minimum irredundant DNFs
 
-Boolean Short Cut Evaluation
-----------------------------
+# Boolean Short Cut Evaluation
 
 In Languages like C and C++, boolean short cut evaluation is used for
 the evaluation of boolean expressions. For example, if in "a+b+c"
@@ -177,8 +256,7 @@ condition a is true, then the complete decision is true, and b and c do
 not need to be evaluated. This has of course an influence on MC/DC
 considerations.
 
-Usage of minimum irredundant DNFs
----------------------------------
+# Usage of minimum irredundant DNFs
 
 Sometime complex boolean expressions are given. There are often shorter
 and easier equivalent expressions existing, which make evaluation for
@@ -206,8 +284,7 @@ time and memory space. E.g. output file size reduced from 364MB to
 
 The software provides flags to control the evaluation method.
 
-Caveat
-------
+# Caveat
 
 The software could be used to create test vectors and test suites. This
 should not be done.
@@ -222,8 +299,10 @@ fulfill the required metrics (defined by you) for structural coverage
 and especially for the recommended MC/DC coverage. There are tools on
 the market to measure different types of structural coverage.
 
-Program usage
-=============
+
+
+# Program usage
+
 
 The software runs as windows console application. The software must be
 invoked via mcdc \<options\>
