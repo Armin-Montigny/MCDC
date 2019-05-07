@@ -341,13 +341,12 @@ If no options are given, then a help file will be shown. All options can
 (and should) be put in a text file, e.g. "options.txt". Then the program
 can be invoked via mcdc --opt "options.txt"
 
-Syntax for boolean expressions
-------------------------------
+# Syntax for boolean expressions
 
-A boolean expressions consists of variables (conditions) in the form of
+A boolean expressions consist of variables (conditions) in the form of
 letters 'a' through 'z' and operators. If you want to enter the negated
-form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is not
-'a'. Possible operations are
+form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is 'NOT a'. 
+Possible operations are
 
 -   OR (binary, left associative), Operator: "+", "\|", "\|\|" all
     equivalent
@@ -364,8 +363,7 @@ form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is not
 Operator precedence is AND \--\> XOR \--\> OR. Can be overruled by
 brackets.
 
-Variable concatenation is equal to an AND operation, so "ab" is "a" AND
-"b".
+Variable concatenation is equal to an AND operation, so "ab" is "a AND b".
 
 Example: \"a+b\^c!(d+ef)\" or "abc(a+c)!(a\^de)"
 
@@ -382,8 +380,20 @@ Program Options
 
 See below an example of an options file.
 
+Most important options are
+````
+-s "boolean expression"        # Define boolean expression to evaluate
+-umdnf                         # Use minimum DNF resulting from QuineMcLuskey Reduction for MCDC 
+-bse                           # Use boolean short cut evaluation in abstract syntax trees
+
+-fo                            # Overwrite all files with new data. Default, priority over -fa
+-fafwsfn                                            # Append files with same given filenames. If for the below files a double 
+````
+
 The "\#" character can be used for inserting comments. Everything
 including and after \# until end of line will be ignored.
+
+Most options are related to directing the output.
 ````
 #
 #------------------------------------------------------------------------------------------------------------
@@ -566,21 +576,28 @@ In the beginning all command line options will be read, evaluated and
 the program will be configured accordingly.
 
 The boolean expression, the "source code", will be read and compiled to
-object code. If there is an error, the program issues an error message
-and tops.
+object code. A classical shift-reduce parser is used to analyze the syntax
+of the source code (boolean expression). The compiler consists of a scanner,
+a parser and a code geenerator. The compiler emits object code. Basically 
+the compiler converts the booelan expression from infix to postfix.
 
-The object code is loaded into a virtual machine. The machine code can
+If there is an error, the program issues an error message and tops.
+
+The object code is loaded/linked into a virtual machine. The machine code can
 be shown to the user. It is a four-byte code per line, consisting of the
 operation and up to 3 parameters.
 
 A result, based on the boolean expression, is calculated for all
-possible combinations of input conditions. The outputs with true will be
-collected in the minterm table. The minterm table is checked for a
+possible combinations of input conditions. So, for 2^n values. 
+(n is the number of conditions). The outputs with true will be
+collected in a Minterm table. The minterm table is checked for a
 tautology (all true) or for a contradiction (empty table). In such a
 case, the further program execution is stopped. Example: "a+A", always
 true, tautology. "a && A" is always false, contradiction.
 
-After the full minterm table is available the algorithm defined by Quine
+A full truth table can be shown to the user, but maybe lengthy.
+
+After the full Minterm table is available, the algorithm defined by Quine
 and McCluskey is used to find the Prime Implicants of the boolean
 expression. We will use here a modified version of the classical Quine &
 McCluskey method. Only the largest and the smallest minterm will be
@@ -594,28 +611,44 @@ available. These terms will be identified and eliminated in the next
 step. First, essential prime implicants will be extracted, then we will
 look for dominating columns and rows. Redundant stuff will be deleted.
 The method will be applied iteratively until everything could be
-eliminated, or a cyclic core is left. The resolution of the cyclic core
-is a smart implementation of the set cover / unate coverage problem
-solver. Basically, an optimized version of Petrick's method is used to
-find all possible coverage sets. After that some heuristic algorithms
-are used to detect a minimum irredundant disjunctive normal form (DNF).
+eliminated, or a cyclic core is left. 
+
+The resolution of the cyclic core is a smart implementation of the 
+set cover / unate coverage problem solver. Basically, an optimized 
+version of Petrick's method is used to find all possible coverage sets. 
+After that some heuristic algorithms are used to detect a minimum 
+irredundant disjunctive normal form (DNF).
 
 The next step can be controlled by the flag "-umdnf". This means, we can
-continue further operations with this minimized DNF or use the original
+continue further operations with the minimized DNF or use the original
 boolean expression.
 
-It should be noted, that none minimized expression will result in longer
+It should be noted, that none minimized expressions will result in longer
 calculation times and higher memory consumption.
 
 The new or original source code (boolean expression), will be compiled
 again. This time into an abstract syntax tree, which can be shown to the
-user.
+user. The compiler uses the same front end, so the, same scanner and
+parser. Just the code geenerator is different and creates the AST
+(abstract syntax tree), stored in a linear respresentation, in a vector
+but with linked elements.
 
 If MC/DC test case generation is intended (default, can be switched off
 with flag "-nomcdc"), a (long running) brute force algorithm is started,
-which evaluates the AST for all possible pairs of test values. The
-influencing tree is constructed and checked for MC/DC criteria and MC/DC
-type. This will often result in many possible MC/DC test pairs per
-condition. To find the minimum set of test vectors, we employ again the
-set cover/unate coverage solver. With many heuristic functions, a
-resulting minimum test set will be generated and recommended.
+which evaluates the AST for all possible pairs of test values. An attributed
+AST for all possible input values is calculated (2^n). 
+
+Then, an influencing tree for all possible combinations of the existing 
+ASTs will be calculated. Since we need to find test pairs, every AST is
+combined with all other ASTs to create an influencing tree. Then the result
+is checked for MC/DC criteria and MC/DC type. The overall number of
+combinations is 2^n(2^(n-1)-1)/2. So, also here we have a goemetrical
+growth in calculation time depending on the number of conditions n.
+
+All this will often result in many possible MC/DC test pairs per
+condition. To find the minimum set of test pairs and with that a minimum
+test vector, we employ again the set cover/unate coverage solver.
+Every condition must be covered by at least one value from a test pair.
+
+With many heuristic functions, a resulting minimum test set will be 
+generated and recommended.
