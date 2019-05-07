@@ -2,8 +2,8 @@
 
 An application for gaining a better understanding of MCDC
 
-Minimization of boolean expressions
-Creation of MCDC test cases
+- Minimization of boolean expressions
+- Creation of MCDC test cases
 
 # Brief Introduction to MCDC
 
@@ -60,35 +60,43 @@ consumption compared to a full MCC (Multiple Condition Coverage). Where
 MCC (based on the number of conditions n) needs 2^n testcases, MCDC needs only 
 n+1 test cases. With growing number of conditions, this difference is significant.
 
+Additionally, both standards do not mention other Loop Coverage or Function
+coverage or others. So, basically MCDC is sufficient.
+
 # MCDC
 
-MCDC has the disadvantage that not many people are fully understanding
-how it works. The reason for that is many scattered, complicated, insufficent
-and not up to date documentation. Even Wikipedia is not fully complete.
+Unfortunately not many test folks are understanding MCDC or structural coverage
+in general and how it works. The reason for that is many the existince of many 
+scattered, complicated, insufficent, partly contradicting and not up to date
+documentation. Even Wikipedia is not fully complete.
 
-A better starting point is 
+A good starting point is 
 
-"An Investigation of Three Forms of the Modified Condition Decision
-Coverage (MCDC) Criterion", "DOT/FAA/AR-01/18", "U.S. Department of
+[An Investigation of Three Forms of the Modified Condition Decision
+Coverage (MCDC) Criterion](http://www.tc.faa.gov/its/worldpac/techrpt/ar01-18.pdf),  "DOT/FAA/AR-01/18", "U.S. Department of
 Transportation, Federal Aviation Administration"
 
 # MCDC Definitions
 
-In most FuSa trainings you will just learn about one type of MC/DC, the
+In most FuSa trainings you will just learn about just one type of MC/DC, the
 so called "Unique Cause" MCDC. But this works in only very few cases,
 because often you have strongly or weakly coupled conditions. See the
 simple C-Example statement "if ((a && b) \|\| (a && c)). Here you have 2
 times condition "a" in the boolean expression. A "unique cause"-MC/DC as
 per the original definition is not possible. And the basic problem here
-is the Blackbox approach, where you shoulddefinitely use a Whitebox view 
+is the Blackbox approach, where you should definitely use a Whitebox view 
 (know the source code) to be able to measure structural coverage.
 
-To resolve this problematic of strongly (weakly) coupled conditions in
+To resolve the problematic of strongly (weakly) coupled conditions in
 boolean expressions for MC/DC, additional types of MC/DC have been
 defined
 
 -   "Masking MC/DC"
 -   "Unique Cause + Masking MC/DC".
+
+Additionally, a lot of valid MCDC test pairs will not be found by looking
+at truth tables. And for decisions (boolean expressions) with more than
+4 variables, this is anyway not any longer a proctical approach.
 
 
 # MCDC Types
@@ -120,7 +128,7 @@ Please note additionally that, when using languages with a boolean short cut eva
 strategy (like Java, C, C++), there are even more test pairs fulfilling MCDC criteria.
 
 Very important and as already mentioned, you must understand that a BlackBox view on a truth
-table does not allow to find any kind of Masking or boolean short cut evaluation.
+table does not allow to find any kind of Masking or boolean short cut evaluation test pairs.
 
 MCDC is a structural coverage metric and so a WhiteBox View on the boolean expression 
 is absolutely mandatory.
@@ -134,22 +142,44 @@ cases.
 
 Again. The main algorithms are based on:
 
-"An Investigation of Three Forms of the Modified Condition Decision
-Coverage (MCDC) Criterion", "DOT/FAA/AR-01/18", "U.S. Department of
+[An Investigation of Three Forms of the Modified Condition Decision
+Coverage (MCDC) Criterion](http://www.tc.faa.gov/its/worldpac/techrpt/ar01-18.pdf),  "DOT/FAA/AR-01/18", "U.S. Department of
 Transportation, Federal Aviation Administration"
 
 In this work, "colored" or "attributed" Abstract Syntax Trees (AST) are
 used to create a so called "Influencing AST"
 
 First a boolean expression is analyzed and compiled into an Abstract
-Syntax Tree. Attributes for a "boolean value" and a "not evaluated"-tag,
+Syntax Tree. The AST (abstract syntax tree) will be shown to the user.
+Attributes for a "boolean value" and a "not evaluated"-tag,
 in case of boolean short cut evaluation, are added. To evaluate the
-MC/DC property, we need at least to test values (2 condition sets, or 2
-input variable values) and then check with these test values, if the pre
-conditions for MC/DC are fulfilled. In the case of unique cause MC/DC
-only one condition is allowed to change, and this must have an influence
-on the resulting decision. Example for boolean expression "a+b" and test
-vector 0,1, so for condition b:
+MC/DC property, we need at least to test 2 values, a test pair (2 condition 
+sets, or 2 input variable values) and then check with these test values, if the pre
+conditions for MC/DC are fulfilled. So, we will evaluate one the AST with
+on value of the test pair, then we will evaluate the AST with the  second value 
+from the test pair. Having both AST results available, we will do a tree XOR
+operation to find out, what changed. This means, we will not XOR the final results
+only but the result of each XORed node. Then we see the, what changed between
+both analyzed ASTs. The resulting AST (XORed) is the so called influencing tree.
+
+To find the influencing condition, we will check the following. All nodes in the path, 
+starting from the leaf to the root, must have the value 1 (TRUE). And there must be
+only one path having all TRUEs. Otherwise that condition would not be "influencing".
+
+In the case of unique cause MC/DC only one condition is allowed to change, 
+and this must have an influence on the resulting decision. So no other condition in 
+the influencing tree must have a value of 1.
+
+For masking, also other conditions in the influencing tree could be 1 (meaning
+changed between AST 1 and AST 2) but they must have no influence. They are masked.
+for "Unique Cause + Masking" – MCDC, masking is only allowed for the influencing
+condition. E.g. condition x exists in more than once in the AST, but only one
+is influencing. All other conditions are 0 in the influencing tree (no change).
+This always happens for strongly coupled conditions.
+
+To emphasize again. A WhiteBox view is mandatory. This should be understood by now.
+
+Example for boolean expression "a+b" and test vector 0,1 for condition b:
 
 Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
 ````
@@ -172,13 +202,13 @@ Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
     1             OR 0,2 (1)
     2 ID b (1)
 ````
-Please note: The "AST for influencing condition check" is a tree XOR of
+Please note again: The "AST for influencing condition check" is a tree XOR of
 the previous 2 ASTs. The Or operation result here is not the result of
 "a+b", but an XOR of the OR value in the first AST and OR value of the
 second AST. To find out, if a variable is influencing, only one leaf
 must have changed and from this changed leaf the complete path up to the
 root of the AST, every value must be 1 (This is valid for unique cause
-MC/DS only).
+MC/DC only).
 
 For Masking MC/DC there must be again only one path with all trues from
 the leaf to the root.
@@ -258,10 +288,10 @@ considerations.
 
 # Usage of minimum irredundant DNFs
 
-Sometime complex boolean expressions are given. There are often shorter
+Sometimes complex boolean expressions are given. There are often shorter
 and easier equivalent expressions existing, which make evaluation for
 MC/DC substantially faster and easier. The software incorporates the
-Quine & McCluskey method (modified optimized version) to minimize
+Quine & McCluskey method (a modified optimized version) to minimize
 boolean expression. Since the result of this method may produce more
 than one solution, the set cover or unate covering problem is used, to
 identify all possible outcomes. Heuristic ist used to speed up the
@@ -286,8 +316,8 @@ The software provides flags to control the evaluation method.
 
 # Caveat
 
-The software could be used to create test vectors and test suites. This
-should not be done.
+The software *could* be used to create test vectors and test suites. This
+should **NOT** be done.
 
 It is important to understand that you basically should never use the
 source code or a boolean expression and then derive a test vector out of
