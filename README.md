@@ -155,11 +155,11 @@ Attributes for a "boolean value" and a "not evaluated"-tag,
 in case of boolean short cut evaluation, are added. To evaluate the
 MC/DC property, we need at least to test 2 values, a test pair (2 condition 
 sets, or 2 input variable values) and then check with these test values, if the pre
-conditions for MC/DC are fulfilled. So, we will evaluate one the AST with
-on value of the test pair, then we will evaluate the AST with the  second value 
+conditions for MC/DC are fulfilled. So, we will evaluate the AST with
+one value of the test pair, then we will evaluate the AST with the second value 
 from the test pair. Having both AST results available, we will do a tree XOR
 operation to find out, what changed. This means, we will not XOR the final results
-only but the result of each XORed node. Then we see the, what changed between
+only, but the result of each calculated node. Then we see, what changed between
 both analyzed ASTs. The resulting AST (XORed) is the so called influencing tree.
 
 To find the influencing condition, we will check the following. All nodes in the path, 
@@ -181,8 +181,8 @@ To emphasize again. A WhiteBox view is mandatory. This should be understood by n
 
 Example for boolean expression "a+b" and test vector 0,1 for condition b:
 
-Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
 ````
+Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
     ------------------------------------------------------------------------------
     AST for value: 0
     
