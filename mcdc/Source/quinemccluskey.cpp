@@ -426,7 +426,7 @@ void QuineMcluskey::compareFromBitCountUpperToBitCountLower(uint indexReductionT
 							// Write to other (next) reduction table at the lower bit count index
 							// It is alwyas the lower bit cout index, because if you comapre something
 							// with 4 bits sets and with 3 bits set, then the result is of youres something with 3 bits set
-							reductionTable[static_cast<uint>(indexReductionTableColumn) + 1][static_cast<uint>(ui) - 1]);
+							reductionTable[static_cast<size_t>(indexReductionTableColumn) + 1U][static_cast<uint>(ui) - 1]);
 	}
 }
 

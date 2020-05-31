@@ -88,7 +88,6 @@ public:
 	MintermCalculator& operator =(const MintermCalculator&) = delete;
 	MintermCalculator& operator =(const MintermCalculator&&) = delete;
 
-
 	// This function is made public, becuase we want to know, if the syntax of the boolean expression is OK.
 	bool runCompiler() { objectCode.clear(); compilerResultOK = compiler(); return compilerResultOK; }
 	// Calculate all minterms
@@ -118,7 +117,7 @@ protected:
 	// And the compiler . . .
 	CompilerForVM compiler;
 
-	// Virtula machine used to calculate the result of an boolean expression for a given input
+	// Virtual machine used to calculate the result of an boolean expression for a given input
 	VirtualMachineForBooleanExpressions vmfbe;
 
 	// Number of varaibles in the boolean expression

@@ -149,7 +149,7 @@ class QuineMcluskey
 {
 public:
 	QuineMcluskey();
-
+	
 	std::string getMinimumDisjunctiveNormalForm(MintermVector& mv, const SymbolTable& symbolTable, const std::string& source);
 
 protected:

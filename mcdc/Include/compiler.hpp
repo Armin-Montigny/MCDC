@@ -98,7 +98,7 @@ public:
 	Compiler(const Compiler&&) = delete;
 	Compiler& operator =(const Compiler&) = delete;
 	Compiler& operator =(const Compiler&&) = delete;
-	virtual ~Compiler() {}
+	virtual ~Compiler() noexcept {}
 
 	// Run the compiler, or "compile", or "do the compilation"
 	virtual bool operator()() { return parser.parse(); }	// The parser will do the work
@@ -127,8 +127,7 @@ public:
 	CompilerForVM& operator =(const CompilerForVM&) = delete;
 	CompilerForVM& operator =(const CompilerForVM&&) = delete;
 
-#pragma warning(suppress: 26443)
-	virtual ~CompilerForVM() {}
+	~CompilerForVM() noexcept {}
 protected:
 	// The code generator makes the differens in the backend. Front end is identical and will be reused from base class
 	CodeGeneratorForVM codeGeneratorForVM;
@@ -146,8 +145,8 @@ public:
 	CompilerForAST(const CompilerForAST&&) = delete;
 	CompilerForAST& operator =(const CompilerForAST&) = delete;
 	CompilerForAST& operator =(const CompilerForAST&&) = delete;
-#pragma warning(suppress: 26443)
-	virtual ~CompilerForAST() {}
+//#pragma warning(suppress: 26443)
+	~CompilerForAST() noexcept {}
 	
 	// Run the compiler, or "compile", or "do the compilation"
 	bool operator()() override { const bool rc{ parser.parse() }; if (rc) { virtualMachineForAST.calculateAstProperties(); } return rc; }	// The parser will do the work
