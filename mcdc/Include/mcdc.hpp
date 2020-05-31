@@ -182,7 +182,7 @@ protected:
 	// SHort and understandable names for internal data structures
 	struct McdcIndependencePairComparator	// Sort functor. Needed for the set of McdcIndependencePairs
 	{
-		bool operator()(const McdcIndependencePair& left, const McdcIndependencePair&right) noexcept
+		bool operator()(const McdcIndependencePair& left, const McdcIndependencePair&right) const noexcept
 		{
 			return (left.independencePair.first < right.independencePair.first) || ((left.independencePair.first == right.independencePair.first) && (left.independencePair.second < right.independencePair.second));
 		}

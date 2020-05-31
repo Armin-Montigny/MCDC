@@ -233,7 +233,7 @@ struct CellVectorHeader
 // Since we will store the data in a set, we need a custom comperator function. The text is the sort criterium
 struct CellVectorHeaderComparator
 {
-	bool operator ()(const CellVectorHeader& left, const CellVectorHeader& right) noexcept {return (left.textInfo < right.textInfo);}
+	bool operator ()(const CellVectorHeader& left, const CellVectorHeader& right) const noexcept {return (left.textInfo < right.textInfo);}
 };
 
 

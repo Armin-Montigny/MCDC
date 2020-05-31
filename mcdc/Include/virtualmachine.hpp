@@ -123,7 +123,7 @@ protected:
 
 
 
-inline MachineRegisterType VirtualMachineForBooleanExpressions::getSourceValue(uint index)  noexcept
+inline MachineRegisterType VirtualMachineForBooleanExpressions::getSourceValue(uint index) noexcept
 {
 	const MachineRegisterType result = (null<uint32>() == (sourceValue&  bitMask[index])) ? 0U : 1U;
 	return result;

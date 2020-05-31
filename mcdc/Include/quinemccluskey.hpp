@@ -130,7 +130,7 @@ struct PrimeImplicantType
 // The prime imlicants will be stored in a std::set. This needs a compare function. Here we define the Functor for it
 struct PrimeImplicantTypeCompare
 {
-	bool operator() (const PrimeImplicantType& lhs, const PrimeImplicantType& rhs) noexcept
+	bool operator() (const PrimeImplicantType& lhs, const PrimeImplicantType& rhs) const noexcept
 	{
 		return ((lhs.term < rhs.term) || ((lhs.term == rhs.term) && (lhs.mask < rhs.mask)));
 	}
