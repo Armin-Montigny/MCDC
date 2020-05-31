@@ -1,78 +1,188 @@
-# Evaluation of Boolean Expressions and MCDC
+# Evaluation of Boolean Expressions and MCDC test cases
 
 An application for gaining a better understanding of MCDC
 
-Brief Introduction to MCDC
-==========================
+- Minimization of boolean expressions
+- Creation of MCDC test cases
 
-In automotive Functional Safety (FuSa) relevant projects you will often
-hear the term MC/DC. MC/DC is the abbreviation for Modified Condition /
-Decision Coverage. It is a part of the family of Structural Coverage
-metrics that are used to check the thoroughness of tests, for example:
-requirements-based tests. With that more failures shall be detected
-early and consequently prevented.
+# Brief Introduction to MCDC
 
-In most FuSa trainings you will just learn about one type of MC/DC, the
-so called "unique cause" MCDC. But this works in only very few cases,
+# Unit Testing / Verification
+
+Unit testing/verification strategies often contain requirements regarding
+structural coverage. Metrics are used to evaluate the completeness of test 
+cases and to demonstrate that there is no unintended functionality.
+Analysis of structural coverage can reveal shortcomings in requirement-based 
+test cases, inadequacies in requirements, dead code, deactivated code or 
+unintended functionality. If the measured and achieved structural coverage 
+is considered insufficient, either additional test cases shall be specified 
+or a rationale shall be provided.
+
+Software Unit Test/Verification is necessary to verify software units and
+to provide evidence that for the compliance of the software units with the
+software detailed design and with non-functional software requirements.
+
+Methods for software uint testing are:
+ - Requirements based test
+ - Interface test
+ - Fault injection test
+ - Resource usage test
+ - Back-to-back comparison between models and code
+ - and more . . .
+
+From the methods above, test cases need to be derived. Methods for deriving 
+tests case are:
+ - Analysis of requirements
+ - Generation and analysis of equivalence classes
+ - Analysis of boundary values
+ - Error guessing
+ - and more . . .
+
+# Structural Coverage
+
+As mentioned above, the completeness of tests can be shown by structural
+coverage methods. There are many different procedures available. And the
+more complex operations subsume the easier ones. Here a brief overview.
+
+![Overview Coverage Types](https://i.stack.imgur.com/LfOAn.png) 
+
+There are additional coverage types like Loop Coverage or Function coverage.
+Also this methods will add some additional value in the area of 15-20%.
+
+However, there is a recomendation for safety relavant software in the
+avionics and the automotive industry, for example in DO178 or ISO 26262.
+
+The metric that should be used and that is sufficient, even for safety critical
+projects, is MD/DC:  Modified Condition Decision Coverage
+
+That is the most effective method and reduces computation time and memory
+consumption compared to a full MCC (Multiple Condition Coverage). Where
+MCC (based on the number of conditions n) needs 2^n testcases, MCDC needs only 
+n+1 test cases. With growing number of conditions, this difference is significant.
+
+Additionally, both standards do not mention other Loop Coverage or Function
+coverage or others. So, basically MCDC is sufficient.
+
+# MCDC
+
+Unfortunately not many test folks are understanding MCDC or structural coverage
+in general and how it works. The reason for that is many the existince of many 
+scattered, complicated, insufficent, partly contradicting and not up to date
+documentation. Even Wikipedia is not fully complete.
+
+A good starting point is 
+
+[An Investigation of Three Forms of the Modified Condition Decision
+Coverage (MCDC) Criterion](http://www.tc.faa.gov/its/worldpac/techrpt/ar01-18.pdf),  "DOT/FAA/AR-01/18", "U.S. Department of
+Transportation, Federal Aviation Administration"
+
+# MCDC Definitions
+
+In most FuSa trainings you will just learn about just one type of MC/DC, the
+so called "Unique Cause" MCDC. But this works in only very few cases,
 because often you have strongly or weakly coupled conditions. See the
 simple C-Example statement "if ((a && b) \|\| (a && c)). Here you have 2
 times condition "a" in the boolean expression. A "unique cause"-MC/DC as
 per the original definition is not possible. And the basic problem here
-is the Blackbox view, where you definitely need a Whitebox view (know
-the source code) to be able to measure structural coverage.
+is the Blackbox approach, where you should definitely use a Whitebox view 
+(know the source code) to be able to measure structural coverage.
 
-To resolve this problematic of strongly (weakly) coupled conditions in
+To resolve the problematic of strongly (weakly) coupled conditions in
 boolean expressions for MC/DC, additional types of MC/DC have been
-defined:
+defined
 
 -   "Masking MC/DC"
-
 -   "Unique Cause + Masking MC/DC".
 
-Here the Definition for all types of MC/DC:
+Additionally, a lot of valid MCDC test pairs will not be found by looking
+at truth tables. And for decisions (boolean expressions) with more than
+4 variables, this is anyway not any longer a proctical approach.
 
--   Unique Cause MC/DC: For 2 test cases / test vectors / values of
-    conditions for an expression, exactly one condition changed and the
-    result of the boolean expression (the decision) changed also its
-    value. The modification of this one input condition had an influence
-    on the decision.
 
--   Masking MC/DC: For 2 test cases / test vectors / values of
-    conditions for an expression, one condition changed with the result
-    of changing the decision. Other conditions may have also changed,
-    but they had no influence on the decision, because their effect is
-    masked by other boolean expressions.
+# MCDC Types
 
--   Unique Cause + Masking MC/DC: Here a unique cause for all uncoupled
-    conditions is required. For strongly coupled conditions, masking is
-    allowed (see above).
+To achieve MCDC you need to find at least one Test Pair for each condition 
+in your boolean expression that fulfills the MCDC criterion.
 
-Applied Method
-==============
+At the moment there are 3 types of MCDC defined and approved by certification 
+bodies (e.g. FAA):
+ - "Unique Cause" – MCDC (original definition): Only one, specifically the 
+ influencing condition may change between the two test values of the test pair. 
+ The resulting decision, the result of the boolean expression, must also be 
+ different for the 2 test values of the test pair. All other conditions in the 
+ test pair must be fixed and unchanged.
+ - "Masking" – MCDC”: Only one condition of the boolean expression having an
+ influence on the outcome of the decision may change. Other conditions may 
+ change as well, but must be masked. Masked means, using the boolean logic in 
+ the expression, they will not have an influence on the outcome. If the left 
+ side of an AND is FALSE, then the complete rightside  expression and sub expressions
+ do not matter. They are masked. Masking is a relaxation of  the “Unique Cause”MCDC.
+ - "Unique Cause + Masking" – MCDC. This is a hybrid and especially needed for boolean 
+ expressions with strongly coupled conditions like for example in “ab+ac”. It is not 
+ possible to find a test pair for condition “a” the fulfills "Unique Cause" – MCDC. 
+ So, we can relax the original definition, and allow masking for strongly coupled conditions.
 
-For many people, the MC/DC definitions are hard to understand. The
-presented software helps to illustrate the construction of MC/DC test
-cases. The main algorithms are based on:
+With these 2 additional definitions much more test pairs can be found.
 
-"An Investigation of Three Forms of the Modified Condition Decision
-Coverage (MCDC) Criterion", "DOT/FAA/AR-01/18", "U.S. Department of
+Please note additionally that, when using languages with a boolean short cut evaluation 
+strategy (like Java, C, C++), there are even more test pairs fulfilling MCDC criteria.
+
+Very important and as already mentioned, you must understand that a BlackBox view on a truth
+table does not allow to find any kind of Masking or boolean short cut evaluation test pairs.
+
+MCDC is a structural coverage metric and so a WhiteBox View on the boolean expression 
+is absolutely mandatory.
+
+
+# Applied Method
+
+To gain a better understanding on MCDC, this software hase been devolped. 
+The presented software helps to illustrate the construction of MC/DC test
+cases. 
+
+Again. The main algorithms are based on:
+
+[An Investigation of Three Forms of the Modified Condition Decision
+Coverage (MCDC) Criterion](http://www.tc.faa.gov/its/worldpac/techrpt/ar01-18.pdf),  "DOT/FAA/AR-01/18", "U.S. Department of
 Transportation, Federal Aviation Administration"
 
 In this work, "colored" or "attributed" Abstract Syntax Trees (AST) are
 used to create a so called "Influencing AST"
 
 First a boolean expression is analyzed and compiled into an Abstract
-Syntax Tree. Attributes for a "boolean value" and a "not evaluated"-tag,
+Syntax Tree. The AST (abstract syntax tree) will be shown to the user.
+Attributes for a "boolean value" and a "not evaluated"-tag,
 in case of boolean short cut evaluation, are added. To evaluate the
-MC/DC property, we need at least to test values (2 condition sets, or 2
-input variable values) and then check with these test values, if the pre
-conditions for MC/DC are fulfilled. In the case of unique cause MC/DC
-only one condition is allowed to change, and this must have an influence
-on the resulting decision. Example for boolean expression "a+b" and test
-vector 0,1, so for condition b:
+MC/DC property, we need at least to test 2 values, a test pair (2 condition 
+sets, or 2 input variable values) and then check with these test values, if the pre
+conditions for MC/DC are fulfilled. So, we will evaluate the AST with
+one value of the test pair, then we will evaluate the AST with the second value 
+from the test pair. Having both AST results available, we will do a tree XOR
+operation to find out, what changed. This means, we will not XOR the final results
+only, but the result of each calculated node. Then we see, what changed between
+both analyzed ASTs. The resulting AST (XORed) is the so called influencing tree.
 
-Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
+To find the influencing condition, we will check the following. All nodes in the path, 
+starting from the leaf to the root, must have the value 1 (TRUE). And there must be
+only one path having all TRUEs. Otherwise that condition would not be "influencing".
+
+In the case of unique cause MC/DC only one condition is allowed to change, 
+and this must have an influence on the resulting decision. So no other condition in 
+the influencing tree must have a value of 1.
+
+For masking, also other conditions in the influencing tree could be 1 (meaning
+changed between AST 1 and AST 2) but they must have no influence. They are masked.
+for "Unique Cause + Masking" – MCDC, masking is only allowed for the influencing
+condition. E.g. condition x exists in more than once in the AST, but only one
+is influencing. All other conditions are 0 in the influencing tree (no change).
+This always happens for strongly coupled conditions.
+
+To emphasize again. A WhiteBox view is mandatory. This should be understood by now.
+
+Example for boolean expression "a+b" and test vector 0,1 for condition b:
+
 ````
+Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
     ------------------------------------------------------------------------------
     AST for value: 0
     
@@ -92,13 +202,13 @@ Found Unique Cause MCDC Test pair for condition: b Test Pair: 0 1
     1             OR 0,2 (1)
     2 ID b (1)
 ````
-Please note: The "AST for influencing condition check" is a tree XOR of
+Please note again: The "AST for influencing condition check" is a tree XOR of
 the previous 2 ASTs. The Or operation result here is not the result of
 "a+b", but an XOR of the OR value in the first AST and OR value of the
 second AST. To find out, if a variable is influencing, only one leaf
 must have changed and from this changed leaf the complete path up to the
 root of the AST, every value must be 1 (This is valid for unique cause
-MC/DS only).
+MC/DC only).
 
 For Masking MC/DC there must be again only one path with all trues from
 the leaf to the root.
@@ -159,8 +269,8 @@ logic. Therefor this test vector (0, 15) is MCDC for condition b.
 The developed software shows all this ASTs and helps to understand the
 MC/DC logic.
 
-Mode of Operation
-=================
+# Mode of Operation
+
 
 Special Settings can be used to control the mode of operation.
 
@@ -168,8 +278,7 @@ Special Settings can be used to control the mode of operation.
 
 -   Usage of minimum irredundant DNFs
 
-Boolean Short Cut Evaluation
-----------------------------
+# Boolean Short Cut Evaluation
 
 In Languages like C and C++, boolean short cut evaluation is used for
 the evaluation of boolean expressions. For example, if in "a+b+c"
@@ -177,13 +286,12 @@ condition a is true, then the complete decision is true, and b and c do
 not need to be evaluated. This has of course an influence on MC/DC
 considerations.
 
-Usage of minimum irredundant DNFs
----------------------------------
+# Usage of minimum irredundant DNFs
 
-Sometime complex boolean expressions are given. There are often shorter
+Sometimes complex boolean expressions are given. There are often shorter
 and easier equivalent expressions existing, which make evaluation for
 MC/DC substantially faster and easier. The software incorporates the
-Quine & McCluskey method (modified optimized version) to minimize
+Quine & McCluskey method (a modified optimized version) to minimize
 boolean expression. Since the result of this method may produce more
 than one solution, the set cover or unate covering problem is used, to
 identify all possible outcomes. Heuristic ist used to speed up the
@@ -206,11 +314,10 @@ time and memory space. E.g. output file size reduced from 364MB to
 
 The software provides flags to control the evaluation method.
 
-Caveat
-------
+# Caveat
 
-The software could be used to create test vectors and test suites. This
-should not be done.
+The software *could* be used to create test vectors and test suites. This
+should **NOT** be done.
 
 It is important to understand that you basically should never use the
 source code or a boolean expression and then derive a test vector out of
@@ -222,8 +329,10 @@ fulfill the required metrics (defined by you) for structural coverage
 and especially for the recommended MC/DC coverage. There are tools on
 the market to measure different types of structural coverage.
 
-Program usage
-=============
+
+
+# Program usage
+
 
 The software runs as windows console application. The software must be
 invoked via mcdc \<options\>
@@ -232,13 +341,12 @@ If no options are given, then a help file will be shown. All options can
 (and should) be put in a text file, e.g. "options.txt". Then the program
 can be invoked via mcdc --opt "options.txt"
 
-Syntax for boolean expressions
-------------------------------
+# Syntax for boolean expressions
 
-A boolean expressions consists of variables (conditions) in the form of
+A boolean expressions consist of variables (conditions) in the form of
 letters 'a' through 'z' and operators. If you want to enter the negated
-form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is not
-'a'. Possible operations are
+form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is 'NOT a'. 
+Possible operations are
 
 -   OR (binary, left associative), Operator: "+", "\|", "\|\|" all
     equivalent
@@ -255,8 +363,7 @@ form, then use the uppercase letters 'A' though 'Z'. Meaning 'A' is not
 Operator precedence is AND \--\> XOR \--\> OR. Can be overruled by
 brackets.
 
-Variable concatenation is equal to an AND operation, so "ab" is "a" AND
-"b".
+Variable concatenation is equal to an AND operation, so "ab" is "a AND b".
 
 Example: \"a+b\^c!(d+ef)\" or "abc(a+c)!(a\^de)"
 
@@ -273,8 +380,20 @@ Program Options
 
 See below an example of an options file.
 
+Most important options are
+````
+-s "boolean expression"        # Define boolean expression to evaluate
+-umdnf                         # Use minimum DNF resulting from QuineMcLuskey Reduction for MCDC 
+-bse                           # Use boolean short cut evaluation in abstract syntax trees
+
+-fo                            # Overwrite all files with new data. Default, priority over -fa
+-fafwsfn                                            # Append files with same given filenames. If for the below files a double 
+````
+
 The "\#" character can be used for inserting comments. Everything
 including and after \# until end of line will be ignored.
+
+Most options are related to directing the output.
 ````
 #
 #------------------------------------------------------------------------------------------------------------
@@ -457,21 +576,28 @@ In the beginning all command line options will be read, evaluated and
 the program will be configured accordingly.
 
 The boolean expression, the "source code", will be read and compiled to
-object code. If there is an error, the program issues an error message
-and tops.
+object code. A classical shift-reduce parser is used to analyze the syntax
+of the source code (boolean expression). The compiler consists of a scanner,
+a parser and a code geenerator. The compiler emits object code. Basically 
+the compiler converts the booelan expression from infix to postfix.
 
-The object code is loaded into a virtual machine. The machine code can
+If there is an error, the program issues an error message and tops.
+
+The object code is loaded/linked into a virtual machine. The machine code can
 be shown to the user. It is a four-byte code per line, consisting of the
 operation and up to 3 parameters.
 
 A result, based on the boolean expression, is calculated for all
-possible combinations of input conditions. The outputs with true will be
-collected in the minterm table. The minterm table is checked for a
+possible combinations of input conditions. So, for 2^n values. 
+(n is the number of conditions). The outputs with true will be
+collected in a Minterm table. The minterm table is checked for a
 tautology (all true) or for a contradiction (empty table). In such a
 case, the further program execution is stopped. Example: "a+A", always
 true, tautology. "a && A" is always false, contradiction.
 
-After the full minterm table is available the algorithm defined by Quine
+A full truth table can be shown to the user, but maybe lengthy.
+
+After the full Minterm table is available, the algorithm defined by Quine
 and McCluskey is used to find the Prime Implicants of the boolean
 expression. We will use here a modified version of the classical Quine &
 McCluskey method. Only the largest and the smallest minterm will be
@@ -485,28 +611,44 @@ available. These terms will be identified and eliminated in the next
 step. First, essential prime implicants will be extracted, then we will
 look for dominating columns and rows. Redundant stuff will be deleted.
 The method will be applied iteratively until everything could be
-eliminated, or a cyclic core is left. The resolution of the cyclic core
-is a smart implementation of the set cover / unate coverage problem
-solver. Basically, an optimized version of Petrick's method is used to
-find all possible coverage sets. After that some heuristic algorithms
-are used to detect a minimum irredundant disjunctive normal form (DNF).
+eliminated, or a cyclic core is left. 
+
+The resolution of the cyclic core is a smart implementation of the 
+set cover / unate coverage problem solver. Basically, an optimized 
+version of Petrick's method is used to find all possible coverage sets. 
+After that some heuristic algorithms are used to detect a minimum 
+irredundant disjunctive normal form (DNF).
 
 The next step can be controlled by the flag "-umdnf". This means, we can
-continue further operations with this minimized DNF or use the original
+continue further operations with the minimized DNF or use the original
 boolean expression.
 
-It should be noted, that none minimized expression will result in longer
+It should be noted, that none minimized expressions will result in longer
 calculation times and higher memory consumption.
 
 The new or original source code (boolean expression), will be compiled
 again. This time into an abstract syntax tree, which can be shown to the
-user.
+user. The compiler uses the same front end, so the, same scanner and
+parser. Just the code geenerator is different and creates the AST
+(abstract syntax tree), stored in a linear respresentation, in a vector
+but with linked elements.
 
 If MC/DC test case generation is intended (default, can be switched off
 with flag "-nomcdc"), a (long running) brute force algorithm is started,
-which evaluates the AST for all possible pairs of test values. The
-influencing tree is constructed and checked for MC/DC criteria and MC/DC
-type. This will often result in many possible MC/DC test pairs per
-condition. To find the minimum set of test vectors, we employ again the
-set cover/unate coverage solver. With many heuristic functions, a
-resulting minimum test set will be generated and recommended.
+which evaluates the AST for all possible pairs of test values. An attributed
+AST for all possible input values is calculated (2^n). 
+
+Then, an influencing tree for all possible combinations of the existing 
+ASTs will be calculated. Since we need to find test pairs, every AST is
+combined with all other ASTs to create an influencing tree. Then the result
+is checked for MC/DC criteria and MC/DC type. The overall number of
+combinations is 2^n(2^(n-1)-1)/2. So, also here we have a goemetrical
+growth in calculation time depending on the number of conditions n.
+
+All this will often result in many possible MC/DC test pairs per
+condition. To find the minimum set of test pairs and with that a minimum
+test vector, we employ again the set cover/unate coverage solver.
+Every condition must be covered by at least one value from a test pair.
+
+With many heuristic functions, a resulting minimum test set will be 
+generated and recommended.
