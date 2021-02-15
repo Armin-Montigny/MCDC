@@ -125,6 +125,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cstring>
 
 // Add MCDC test pair to internal variable structures
 // Partly redundant storage of values

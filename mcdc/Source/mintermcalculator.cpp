@@ -72,6 +72,7 @@
 #include <iostream>
 #include <bitset>
 #include <iomanip>
+#include <cmath>
 
 
 
@@ -253,3 +254,4 @@ void printTruthTable(const std::string& source, MintermVector& mintermVector, co
 	os << "\n\n";
 
 }
+
