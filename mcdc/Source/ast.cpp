@@ -64,6 +64,8 @@
 #include <iomanip>
 #include <cctype>
 #include <sstream> 
+#include <climits>
+#include <cstring>
 
 
 

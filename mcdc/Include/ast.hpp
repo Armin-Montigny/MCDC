@@ -66,6 +66,8 @@
 #include "symboltable.hpp"
 #include "cloption.hpp"
 
+#include <climits>
+
 // This is the indicator for no linkage. So if the node has no children, we will set this value in the link field
 #pragma warning(suppress: 26472)
 constexpr uint ASTNoLinkedElement{ UINT_MAX };
